@@ -1,12 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const viewEngine = require('./config/viewEngine');
-const uploadRouter = require('./route/uploadRouter');
+const uploadRouter = require('./routes/uploadRouter');
+const adminRouter = require('./routes/loginAdminRouter');
 const connectDB = require('./config/connectDB');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
-const Doctor = require('./model/Doctor');
 const cron = require('node-cron');
 const moment = require('moment');
 
@@ -50,10 +50,12 @@ app.use('/uploads', express.static(path.join(__dirname, './public/uploads')));
 viewEngine(app);
 
 // Định nghĩa các route cho API
-// app.use("/api/users", userRouter);
+// danh cho login,register,logout admin
+app.use("/api/accadmin", adminRouter);
+
 
 // Sử dụng uploadRouter
-app.use("/api/doctor", uploadRouter); // Đặt đường dẫn cho upload
+app.use("/api/product", uploadRouter); // Đặt đường dẫn cho upload
 
 
 app.listen(port, () => {
