@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const viewEngine = require('./config/viewEngine');
 const uploadRouter = require('./routes/uploadRouter');
 const adminRouter = require('./routes/loginAdminRouter');
+const categoryRouter = require('./routes/theLoaiRouter');
 const connectDB = require('./config/connectDB');
 const cors = require('cors');
 const multer = require('multer');
@@ -20,7 +21,7 @@ connectDB();
 
 // Cài đặt CORS
 const allowedOrigins = [
-    'http://localhost:3000', // Local development
+    'http://localhost:3003', // Local development
 ];
 
 app.use(cors({
@@ -52,10 +53,12 @@ viewEngine(app);
 // Định nghĩa các route cho API
 // danh cho login,register,logout admin
 app.use("/api/accadmin", adminRouter);
+// API The Loai
+app.use("/api/category", categoryRouter);
 
 
 // Sử dụng uploadRouter
-app.use("/api/product", uploadRouter); // Đặt đường dẫn cho upload
+app.use("/api/upload", uploadRouter); // Đặt đường dẫn cho upload
 
 
 app.listen(port, () => {
