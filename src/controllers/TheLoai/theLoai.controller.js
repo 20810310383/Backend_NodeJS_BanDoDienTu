@@ -6,13 +6,42 @@ module.exports = {
 
     getTheLoai: async (req, res) => {
         try {
-            let loaisp = await LoaiSP.find({})
+            const { page, limit, TenLoaiSP } = req.query; 
+
+            // Chuyển đổi thành số
+            const pageNumber = parseInt(page, 10);
+            const limitNumber = parseInt(limit, 10);
+
+            // Tính toán số bản ghi bỏ qua
+            const skip = (pageNumber - 1) * limitNumber;
+
+            // Tạo query tìm kiếm
+            const query = {};
+            if (TenLoaiSP) {
+                const searchKeywords = (TenLoaiSP || '')
+                const keywordsArray = searchKeywords.trim().split(/\s+/);
+
+                const searchConditions = keywordsArray.map(keyword => ({
+                    TenLoaiSP: { $regex: keyword, $options: 'i' } // Tìm kiếm không phân biệt chữ hoa chữ thường
+                }));
+
+                query.$or = searchConditions;
+            }
+
+            let loaisp = await LoaiSP.find(query).skip(skip).limit(limitNumber);
+
+            const totalLoaiSP = await LoaiSP.countDocuments(query); // Đếm tổng số chức vụ
+
+            const totalPages = Math.ceil(totalLoaiSP / limitNumber); // Tính số trang
 
             if(loaisp) {
                 return res.status(200).json({
                     message: "Đã tìm ra thể loại",
                     errCode: 0,
-                    data: loaisp
+                    data: loaisp,
+                    totalLoaiSP,
+                    totalPages,
+                    currentPage: pageNumber,
                 })
             } else {
                 return res.status(500).json({
@@ -31,13 +60,7 @@ module.exports = {
 
     createTheLoai: async (req, res) => {
         try {
-            let {TenLoaiSP, Icon} = req.body
-
-            if (!TenLoaiSP || !Icon ) {
-                return res.status(400).json({
-                    message: "Vui lòng cung cấp đầy đủ thông tin!"
-                });
-            }
+            let {TenLoaiSP, Icon} = req.body            
 
             let checkTenTL = await LoaiSP.findOne({TenLoaiSP: TenLoaiSP})
             if(checkTenTL){
@@ -74,7 +97,7 @@ module.exports = {
         try {
             let {_id, TenLoaiSP, Icon} = req.body
 
-            let updateTL = await TheLoai.updateOne({_id: _id},{TenLoaiSP, Icon})
+            let updateTL = await LoaiSP.updateOne({_id: _id},{TenLoaiSP, Icon})
 
             if(updateTL) {
                 return res.status(200).json({
@@ -99,7 +122,7 @@ module.exports = {
     deleteTheLoai: async (req, res) => {
         try {
             const _id = req.params.id
-            let xoaTL = await TheLoai.deleteOne({_id: _id})
+            let xoaTL = await LoaiSP.deleteOne({_id: _id})
 
             if(xoaTL) {
                 return res.status(200).json({
