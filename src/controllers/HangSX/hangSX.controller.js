@@ -1,4 +1,7 @@
 const HangSX = require('../../model/HangSX');
+const mongoose = require('mongoose');  // Đảm bảo bạn đã import mongoose
+const { Types } = require('mongoose');  // Đảm bảo rằng bạn đã import Types từ mongoose
+const { ObjectId } = mongoose.Types;
 
 require('dotenv').config();
 
@@ -35,20 +38,25 @@ module.exports = {
             const groupedHangSX = hangsx.reduce((result, hsx) => {
                 const tenHangSX = hsx.TenHangSX;
                 const loaiSP = hsx.IdLoaiSP ? hsx.IdLoaiSP.TenLoaiSP : 'No Categories';
+                const _idLoai = hsx.IdLoaiSP ? hsx.IdLoaiSP._id : 'No Categories';
+                console.log("_idLoai: ", _idLoai);
+                
                 
                 // Kiểm tra xem TenHangSX đã tồn tại trong result chưa
                 if (result[tenHangSX]) {
-                    // Nếu tồn tại, thêm vào mảng loaiSP của nhóm đó
-                    result[tenHangSX].IdLoaiSP.push(loaiSP);
+                    // Nếu tồn tại, thêm vào mảng IdLoaiSP của nhóm đó
+                    result[tenHangSX].IdLoaiSP.push({ _id: _idLoai, TenLoaiSP: loaiSP });
                 } else {
                     // Nếu chưa tồn tại, tạo một nhóm mới với TenHangSX và IdLoaiSP là một mảng
-                    result[tenHangSX] = { TenHangSX: tenHangSX, IdLoaiSP: [loaiSP] };
+                    result[tenHangSX] = { TenHangSX: tenHangSX, IdLoaiSP: [{ _id: _idLoai, TenLoaiSP: loaiSP }] };
                 }
                 return result;
             }, {});
     
             // Chuyển đối tượng thành mảng để dễ xử lý hơn
             const finalGroupedHangSX = Object.values(groupedHangSX);
+            console.log("finalGroupedHangSX: ",finalGroupedHangSX);
+            
     
             // Tính tổng số nhóm
             const totalHangSXP = finalGroupedHangSX.length;
@@ -67,6 +75,7 @@ module.exports = {
                     totalHangSXP,
                     totalPages,
                     currentPage: pageNumber,
+                    finalGroupedHangSX
                 });
             } else {
                 return res.status(500).json({
@@ -127,33 +136,38 @@ module.exports = {
         }        
     },
 
-    // chua xong
     updateHangSX: async (req, res) => {
         try {
-            let {_id, TenHangSX, IdLoaiSP} = req.body
-
-            let updateHangSX = await HangSX.updateOne({_id: _id},{TenHangSX, IdLoaiSP})
-
-            if(updateHangSX) {
-                return res.status(200).json({
-                    data: updateHangSX,
-                    message: "Chỉnh sửa hãng sản phẩm thành công"
-                })
-            } else {
-                return res.status(404).json({                
-                    message: "Chỉnh sửa hãng sản phẩm thất bại"
-                })
+            const { TenHangSX, IdLoaiSP } = req.body;
+    
+            //Xóa tất cả các tài liệu có TenHangSX = TenHangSX (loại bỏ các mục cũ)
+            const deleteResult = await HangSX.deleteMany({ TenHangSX: TenHangSX });
+            console.log("Số tài liệu bị xóa: ", deleteResult.deletedCount);
+    
+            // Thêm mới các tài liệu với TenHangSX là TenHangSX và IdLoaiSP mới
+            for (let i = 0; i < IdLoaiSP.length; i++) {
+                let newHangSX = new HangSX({
+                    TenHangSX: TenHangSX, 
+                    IdLoaiSP: IdLoaiSP[i]  // Mỗi IdLoaiSP mới cho từng tài liệu
+                });
+                await newHangSX.save();  // Lưu tài liệu mới vào database
             }
-
+    
+            // Trả về kết quả thành công
+            return res.status(200).json({
+                message: "Cập nhật và thêm mới loại sản phẩm thành công!"
+            });
+    
         } catch (error) {
-            console.error(error);
+            console.error("Lỗi khi cập nhật và thêm mới hãng sản phẩm:", error);
             return res.status(500).json({
                 message: "Có lỗi xảy ra.",
-                error: error.message,
+                error: error.message
             });
         }
     },
-
+    
+    
     deleteHangSX: async (req, res) => {
         try {
             const nameHSX = req.params.nameHSX
