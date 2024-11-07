@@ -1,0 +1,156 @@
+const HangSX = require('../../model/HangSX');
+
+require('dotenv').config();
+
+module.exports = {
+
+    getHangSX: async (req, res) => {
+        try {
+            const { page, limit, TenHangSX } = req.query; 
+
+            // Chuyển đổi thành số
+            const pageNumber = parseInt(page, 10);
+            const limitNumber = parseInt(limit, 10);
+
+            // Tính toán số bản ghi bỏ qua
+            const skip = (pageNumber - 1) * limitNumber;
+
+            // Tạo query tìm kiếm
+            const query = {};
+            if (TenHangSX) {
+                const searchKeywords = (TenHangSX || '')
+                const keywordsArray = searchKeywords.trim().split(/\s+/);
+
+                const searchConditions = keywordsArray.map(keyword => ({
+                    TenHangSX: { $regex: keyword, $options: 'i' } // Tìm kiếm không phân biệt chữ hoa chữ thường
+                }));
+
+                query.$or = searchConditions;
+            }
+
+            let hangsx = await HangSX.find(query).populate('IdLoaiSP').skip(skip).limit(limitNumber);
+
+            const totalHangSXP = await HangSX.countDocuments(query); // Đếm tổng số chức vụ
+
+            const totalPages = Math.ceil(totalHangSXP / limitNumber); // Tính số trang
+
+            if(hangsx) {
+                return res.status(200).json({
+                    message: "Đã tìm ra hãng sx",
+                    errCode: 0,
+                    data: hangsx,
+                    totalHangSXP,
+                    totalPages,
+                    currentPage: pageNumber,
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Tìm hãng sx thất bại!",
+                    errCode: -1,
+                })
+            }
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }        
+    },
+
+    createHangSX: async (req, res) => {
+        try {
+            let {TenHangSX, IdLoaiSP} = req.body  
+            
+            // Tạo đối tượng hangSX
+            const hangSX = IdLoaiSP.map(idLoai => ({
+                TenHangSX: TenHangSX,
+                IdLoaiSP: idLoai
+            }))
+            console.log("hangSX: ", hangSX);
+
+            let checkTenHangSX = await HangSX.findOne({TenHangSX: TenHangSX})
+            if(checkTenHangSX){
+                return res.status(500).json({
+                    message: "Trùng tên Hãng, Bạn không thể thêm mới!",                    
+                    errCode: 0,
+                })
+            }
+
+            let createHangSX = await HangSX.insertMany(hangSX)
+
+            if(createHangSX){
+                console.log("Inserted documents: ", createHangSX);
+                return res.status(200).json({
+                    message: "Bạn đã thêm hãng sản phẩm thành công!",
+                    errCode: 0,
+                    data: createHangSX
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Bạn thêm hãng sản phẩm thất bại!",                
+                    errCode: -1,
+                })
+            }    
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }        
+    },
+
+    // chua xong
+    updateHangSX: async (req, res) => {
+        try {
+            let {_id, TenHangSX, IdLoaiSP} = req.body
+
+            let updateHangSX = await HangSX.updateOne({_id: _id},{TenHangSX, IdLoaiSP})
+
+            if(updateHangSX) {
+                return res.status(200).json({
+                    data: updateHangSX,
+                    message: "Chỉnh sửa hãng sản phẩm thành công"
+                })
+            } else {
+                return res.status(404).json({                
+                    message: "Chỉnh sửa hãng sản phẩm thất bại"
+                })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }
+    },
+
+    deleteHangSX: async (req, res) => {
+        try {
+            const nameHSX = req.params.nameHSX
+            let xoaHangSX = await HangSX.deleteMany({TenHangSX: nameHSX})
+
+            if(xoaHangSX) {
+                return res.status(200).json({
+                    data: xoaHangSX,
+                    message: "Bạn đã xoá hãng sản phẩm thành công!"
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Bạn đã xoá hãng sản phẩm thất bại!"
+                })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }
+    },
+}

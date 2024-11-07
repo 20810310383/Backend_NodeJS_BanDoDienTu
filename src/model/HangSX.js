@@ -6,6 +6,9 @@ const HangSX_Schema = new mongoose.Schema(
         TenHangSX: { type: String, required: false },
         IdLoaiSP: {ref: "LoaiSP", type: mongoose.SchemaTypes.ObjectId},
     },
+    { 
+        timestamps: true,   // createAt, updateAt
+    },
 
 );
 

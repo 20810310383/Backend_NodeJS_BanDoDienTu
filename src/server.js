@@ -4,6 +4,7 @@ const viewEngine = require('./config/viewEngine');
 const uploadRouter = require('./routes/uploadRouter');
 const adminRouter = require('./routes/loginAdminRouter');
 const categoryRouter = require('./routes/theLoaiRouter');
+const hangSXRouter = require('./routes/hangSXRouter');
 const connectDB = require('./config/connectDB');
 const cors = require('cors');
 const multer = require('multer');
@@ -50,11 +51,20 @@ app.use('/uploads', express.static(path.join(__dirname, './public/uploads')));
 // Config app
 viewEngine(app);
 
-// Định nghĩa các route cho API
-// danh cho login,register,logout admin
-app.use("/api/accadmin", adminRouter);
-// API The Loai
-app.use("/api/category", categoryRouter);
+
+const routes = [
+    { path: '/api/accadmin', router: adminRouter },
+    { path: '/api/category', router: categoryRouter },
+    { path: '/api/hangsx', router: hangSXRouter }
+];
+  
+routes.forEach(route => app.use(route.path, route.router));
+// // route cho login,register,logout admin
+// app.use("/api/accadmin", adminRouter);
+// // route cho The Loai
+// app.use("/api/category", categoryRouter);
+// // route cho hang sx
+// app.use("/api/hangsx", hangSXRouter);
 
 
 // Sử dụng uploadRouter

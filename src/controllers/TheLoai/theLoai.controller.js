@@ -6,7 +6,7 @@ module.exports = {
 
     getTheLoai: async (req, res) => {
         try {
-            const { page, limit, TenLoaiSP } = req.query; 
+            const { page, limit, TenLoaiSP, sort, order } = req.query; 
 
             // Chuyển đổi thành số
             const pageNumber = parseInt(page, 10);
@@ -28,7 +28,15 @@ module.exports = {
                 query.$or = searchConditions;
             }
 
-            let loaisp = await LoaiSP.find(query).skip(skip).limit(limitNumber);
+            let sortOrder = 1; // tang dn
+            if (order === 'desc') {
+                sortOrder = -1; 
+            }
+            console.log("sortOrder: ", sortOrder);
+            
+
+
+            let loaisp = await LoaiSP.find(query).skip(skip).limit(limitNumber).sort({ [sort]: sortOrder })
 
             const totalLoaiSP = await LoaiSP.countDocuments(query); // Đếm tổng số chức vụ
 
