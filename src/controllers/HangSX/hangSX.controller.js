@@ -7,49 +7,30 @@ module.exports = {
     getHangSX: async (req, res) => {
         try {
             const { page, limit, TenHangSX } = req.query; 
-
+    
             // Chuyển đổi thành số
             const pageNumber = parseInt(page, 10);
             const limitNumber = parseInt(limit, 10);
-
+    
             // Tính toán số bản ghi bỏ qua
             const skip = (pageNumber - 1) * limitNumber;
-
+    
             // Tạo query tìm kiếm
             const query = {};
             if (TenHangSX) {
                 const searchKeywords = (TenHangSX || '')
                 const keywordsArray = searchKeywords.trim().split(/\s+/);
-
+    
                 const searchConditions = keywordsArray.map(keyword => ({
                     TenHangSX: { $regex: keyword, $options: 'i' } // Tìm kiếm không phân biệt chữ hoa chữ thường
                 }));
-
+    
                 query.$or = searchConditions;
             }
-
-            let hangsx = await HangSX.find(query).populate('IdLoaiSP').skip(skip).limit(limitNumber);
-
-            console.log("hangsx: ", hangsx);
-            
-
-            const totalHangSXP = await HangSX.countDocuments(query); // Đếm tổng số chức vụ
-
-            const totalPages = Math.ceil(totalHangSXP / limitNumber); // Tính số trang
-
-            // // Nhóm các thể loại của mỗi hãng sản xuất thành một chuỗi
-            // const groupedHangSX = hangsx.map(hsx => {
-            //     console.log('IdLoaiSP:', hsx.IdLoaiSP);  // Kiểm tra xem IdLoaiSP có phải là mảng hay không
-            //     const tenHangSX = hsx.TenHangSX;
-            //     // const loaiSPList1 = hsx.IdLoaiSP ? hsx.IdLoaiSP.map(loai => loai.TenLoaiSP).join(', ') : 'No Categories';                                
-            //     const loaiSPList = hsx.IdLoaiSP ? hsx.IdLoaiSP.TenLoaiSP : 'No Categories';                                
-            //     return {
-            //         TenHangSX: tenHangSX,
-            //         IdLoaiSP: loaiSPList
-            //     };
-            // });
-            // console.log("groupedHangSX: ", groupedHangSX);
-
+    
+            // Lấy toàn bộ dữ liệu mà không phân trang để nhóm
+            let hangsx = await HangSX.find(query).populate('IdLoaiSP');
+    
             // Nhóm các thể loại của mỗi hãng sản xuất thành một chuỗi
             const groupedHangSX = hangsx.reduce((result, hsx) => {
                 const tenHangSX = hsx.TenHangSX;
@@ -65,18 +46,24 @@ module.exports = {
                 }
                 return result;
             }, {});
-
-            // Chuyển đổi đối tượng thành mảng để dễ xử lý hơn
+    
+            // Chuyển đối tượng thành mảng để dễ xử lý hơn
             const finalGroupedHangSX = Object.values(groupedHangSX);
-
-            console.log("groupedHangSX:", finalGroupedHangSX);
-            
-
-            if (groupedHangSX) {
+    
+            // Tính tổng số nhóm
+            const totalHangSXP = finalGroupedHangSX.length;
+    
+            // Tính số trang
+            const totalPages = Math.ceil(totalHangSXP / limitNumber);
+    
+            // Áp dụng phân trang vào mảng nhóm
+            const paginatedGroupedHangSX = finalGroupedHangSX.slice(skip, skip + limitNumber);
+    
+            if (finalGroupedHangSX) {
                 return res.status(200).json({
                     message: "Đã tìm ra hãng sx",
                     errCode: 0,
-                    data: finalGroupedHangSX,  // Trả về kết quả đã nhóm
+                    data: paginatedGroupedHangSX,  // Trả về kết quả đã nhóm và phân trang
                     totalHangSXP,
                     totalPages,
                     currentPage: pageNumber,
@@ -86,22 +73,6 @@ module.exports = {
                     message: "Tìm hãng sx thất bại!",
                     errCode: -1,
                 });
-            }
-
-            if(hangsx) {
-                return res.status(200).json({
-                    message: "Đã tìm ra hãng sx",
-                    errCode: 0,
-                    data: hangsx,
-                    totalHangSXP,
-                    totalPages,
-                    currentPage: pageNumber,
-                })
-            } else {
-                return res.status(500).json({
-                    message: "Tìm hãng sx thất bại!",
-                    errCode: -1,
-                })
             }
         } catch (error) {
             console.error(error);
