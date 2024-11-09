@@ -5,6 +5,8 @@ const HangSX_Schema = new mongoose.Schema(
     {
         TenHangSX: { type: String, required: false },
         IdLoaiSP: {ref: "LoaiSP", type: mongoose.SchemaTypes.ObjectId},
+        // IdLoaiSP: { type: [String], required: true }, // Lưu trữ dưới dạng mảng các chuỗi
+
     },
     { 
         timestamps: true,   // createAt, updateAt

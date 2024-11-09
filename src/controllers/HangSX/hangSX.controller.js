@@ -1,6 +1,7 @@
 const HangSX = require('../../model/HangSX');
 const mongoose = require('mongoose');  // Đảm bảo bạn đã import mongoose
 const { Types } = require('mongoose');  // Đảm bảo rằng bạn đã import Types từ mongoose
+const LoaiSP = require('../../model/LoaiSP');
 const { ObjectId } = mongoose.Types;
 
 require('dotenv').config();
@@ -37,6 +38,7 @@ module.exports = {
             // Nhóm các thể loại của mỗi hãng sản xuất thành một chuỗi
             const groupedHangSX = hangsx.reduce((result, hsx) => {
                 const tenHangSX = hsx.TenHangSX;
+                const _idHangSX = hsx._id;
                 const loaiSP = hsx.IdLoaiSP ? hsx.IdLoaiSP.TenLoaiSP : 'No Categories';
                 const _idLoai = hsx.IdLoaiSP ? hsx.IdLoaiSP._id : 'No Categories';
                 console.log("_idLoai: ", _idLoai);
@@ -48,7 +50,7 @@ module.exports = {
                     result[tenHangSX].IdLoaiSP.push({ _id: _idLoai, TenLoaiSP: loaiSP });
                 } else {
                     // Nếu chưa tồn tại, tạo một nhóm mới với TenHangSX và IdLoaiSP là một mảng
-                    result[tenHangSX] = { TenHangSX: tenHangSX, IdLoaiSP: [{ _id: _idLoai, TenLoaiSP: loaiSP }] };
+                    result[tenHangSX] = { _id: _idHangSX, TenHangSX: tenHangSX, IdLoaiSP: [{ _id: _idLoai, TenLoaiSP: loaiSP }] };
                 }
                 return result;
             }, {});
@@ -90,8 +92,8 @@ module.exports = {
                 error: error.message,
             });
         }        
-    },
-
+    },  
+    
     createHangSX: async (req, res) => {
         try {
             let {TenHangSX, IdLoaiSP} = req.body  
@@ -103,7 +105,9 @@ module.exports = {
             }))
             console.log("hangSX: ", hangSX);
 
-            let checkTenHangSX = await HangSX.findOne({TenHangSX: TenHangSX})
+            let checkTenHangSX = await HangSX.findOne({
+                TenHangSX: { $regex: new RegExp(`^${TenHangSX}$`, 'i') }  // Sử dụng $regex với tùy chọn 'i' để không phân biệt hoa thường
+            })
             if(checkTenHangSX){
                 return res.status(500).json({
                     message: "Trùng tên Hãng, Bạn không thể thêm mới!",                    
@@ -135,7 +139,7 @@ module.exports = {
             });
         }        
     },
-
+  
     updateHangSX: async (req, res) => {
         try {
             const { TenHangSX, IdLoaiSP } = req.body;
