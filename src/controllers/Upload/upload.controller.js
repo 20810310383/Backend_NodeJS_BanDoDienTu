@@ -42,10 +42,34 @@ const uploadFile = (req, res) => {
         }
 
         const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-        res.json({ url: fileUrl });
+        res.json({ url: fileUrl, typee: "ImageChinh" });
+    });
+};
+
+// Endpoint upload nhiều ảnh
+const uploadFiles = (req, res) => {
+    upload.array('files', 12)(req, res, (err) => {  // 'filee' là tên trường trong form gửi lên
+        if (err) {
+            return res.status(400).json({ message: err.message });
+        }
+
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ message: 'No files uploaded. Vui lòng chọn file để upload.' });
+        }
+
+        // Lấy URL cho mỗi file và trả về
+        const fileUrls = req.files.map((file, index) => {
+            const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+            return {
+                url: fileUrl,
+                typee: 'ImageSlider'  // Ảnh đầu tiên là chính, còn lại là slider
+            };
+        });
+
+        res.json(fileUrls);  // Trả về mảng các URL và loại ảnh
     });
 };
 
 module.exports = {
-    uploadFile,
+    uploadFile, uploadFiles
 };

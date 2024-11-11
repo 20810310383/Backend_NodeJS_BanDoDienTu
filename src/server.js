@@ -5,6 +5,7 @@ const uploadRouter = require('./routes/uploadRouter');
 const adminRouter = require('./routes/loginAdminRouter');
 const categoryRouter = require('./routes/theLoaiRouter');
 const hangSXRouter = require('./routes/hangSXRouter');
+const productRouter = require('./routes/productRouter');
 const connectDB = require('./config/connectDB');
 const cors = require('cors');
 const multer = require('multer');
@@ -55,7 +56,8 @@ viewEngine(app);
 const routes = [
     { path: '/api/accadmin', router: adminRouter },
     { path: '/api/category', router: categoryRouter },
-    { path: '/api/hangsx', router: hangSXRouter }
+    { path: '/api/hangsx', router: hangSXRouter },
+    { path: '/api/product', router: productRouter },
 ];
   
 routes.forEach(route => app.use(route.path, route.router));
@@ -69,6 +71,7 @@ routes.forEach(route => app.use(route.path, route.router));
 
 // Sử dụng uploadRouter
 app.use("/api/upload", uploadRouter); // Đặt đường dẫn cho upload
+
 
 
 app.listen(port, () => {
