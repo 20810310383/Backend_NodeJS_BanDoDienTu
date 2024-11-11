@@ -42,6 +42,15 @@ module.exports = {
                 .limit(limitNumber)
                 .sort({ [sort]: sortOrder })
 
+            // Sắp xếp mảng sizes theo price từ thấp đến cao
+            sp = sp.map(product => {
+                // Sort sizes array based on price (ascending)
+                if (product.sizes && product.sizes.length > 0) {
+                    product.sizes.sort((a, b) => a.price - b.price); // Sort sizes array by price
+                }
+                return product;
+            });
+
             const totalSanPham = await SanPham.countDocuments(query); // Đếm tổng số chức vụ
 
             const totalPages = Math.ceil(totalSanPham / limitNumber); // Tính số trang
