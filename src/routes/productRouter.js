@@ -6,12 +6,12 @@ const router = express.Router();
 router.get("/get-product", product.getProducts );
 
 // tao moi product
-// router.post("/create-the-loai", product.createProduct );
+router.post("/create-product", product.createProduct );
 
 // // update product
-// router.put("/update-the-loai", product.updateProduct );
+// router.put("/update-product", product.updateProduct );
 
 // // delete product
-// router.delete("/delete-the-loai/:id", product.deleteProduct );
+// router.delete("/delete-product/:id", product.deleteProduct );
 
 module.exports = router;

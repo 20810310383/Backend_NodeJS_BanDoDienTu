@@ -70,5 +70,42 @@ module.exports = {
         }        
     },
 
+    createProduct: async (req, res) => {
+        try {
+            let {TenSP, GiamGiaSP, MoTa, MoTaChiTiet, ImageSlider, Image, IdHangSX, IdLoaiSP, sizes} = req.body     
+            
+            console.log("TenSP: ", TenSP);
+            console.log("GiamGiaSP: ", GiamGiaSP);
+            console.log("MoTa: ", MoTa);
+            console.log("MoTaChiTiet: ", MoTaChiTiet);
+            console.log("ImageSlider: ", ImageSlider);
+            console.log("Image: ", Image);
+            console.log("IdHangSX: ", IdHangSX);
+            console.log("IdLoaiSP: ", IdLoaiSP);
+            console.log("sizes: ", sizes);
+            
 
+            let createSP = await SanPham.create({TenSP, GiamGiaSP, MoTa, MoTaChiTiet, ImageSlider, Image, IdHangSX, IdLoaiSP, sizes})
+
+            if(createSP){
+                return res.status(200).json({
+                    message: "Bạn đã thêm sản phẩm thành công!",
+                    errCode: 0,
+                    data: createSP
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Bạn thêm sản phẩm thất bại!",                
+                    errCode: -1,
+                })
+            }    
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }        
+    },
 }
