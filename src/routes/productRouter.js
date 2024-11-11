@@ -8,10 +8,10 @@ router.get("/get-product", product.getProducts );
 // tao moi product
 router.post("/create-product", product.createProduct );
 
-// // update product
+// update product
 // router.put("/update-product", product.updateProduct );
 
-// // delete product
-// router.delete("/delete-product/:id", product.deleteProduct );
+// delete product
+router.delete("/delete-product/:id", product.deleteProduct );
 
 module.exports = router;

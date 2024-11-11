@@ -117,4 +117,29 @@ module.exports = {
             });
         }        
     },
+
+    deleteProduct: async (req, res) => {
+        try {
+            const _id = req.params.id
+            let xoaTL = await SanPham.deleteOne({_id: _id})
+
+            if(xoaTL) {
+                return res.status(200).json({
+                    data: xoaTL,
+                    message: "Bạn đã xoá sản phẩm thành công!"
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Bạn đã xoá sản phẩm thất bại!"
+                })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }
+    },
 }
