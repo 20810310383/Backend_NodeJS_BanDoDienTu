@@ -4,9 +4,7 @@ const mongoose_delete = require('mongoose-delete');
 const HangSX_Schema = new mongoose.Schema(
     {
         TenHangSX: { type: String, required: false },
-        IdLoaiSP: {ref: "LoaiSP", type: mongoose.SchemaTypes.ObjectId},
-        // IdLoaiSP: { type: [String], required: true }, // Lưu trữ dưới dạng mảng các chuỗi
-
+        IdLoaiSP: [{  type: mongoose.SchemaTypes.ObjectId, ref: 'LoaiSP' }]
     },
     { 
         timestamps: true,   // createAt, updateAt
