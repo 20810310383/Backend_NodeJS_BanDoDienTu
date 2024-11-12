@@ -6,7 +6,7 @@ module.exports = {
 
     getProducts: async (req, res) => {
         try {
-            const { page, limit, TenSP, sort, order } = req.query; 
+            const { page, limit, TenSP, sort, order, locTheoLoai } = req.query; 
 
             // Chuyển đổi thành số
             const pageNumber = parseInt(page, 10);
@@ -27,12 +27,21 @@ module.exports = {
 
                 query.$or = searchConditions;
             }
+            // Tìm kiếm theo IdLoaiSP nếu có
+            if (locTheoLoai) {
+                // Chuyển 'locTheoLoai' từ string sang mảng ObjectId
+                const locTheoLoaiArray = Array.isArray(locTheoLoai) ? locTheoLoai : JSON.parse(locTheoLoai);
+
+                query.IdLoaiSP = { $in: locTheoLoaiArray }; // Dùng toán tử $in để lọc theo mảng các ObjectId
+            }
+
 
             let sortOrder = 1; // tang dn
             if (order === 'desc') {
                 sortOrder = -1; 
             }
             console.log("sortOrder: ", sortOrder);
+            console.log("locTheoLoai: ", locTheoLoai);
             
 
 
