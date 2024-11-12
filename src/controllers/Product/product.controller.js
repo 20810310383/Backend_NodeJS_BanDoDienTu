@@ -118,6 +118,32 @@ module.exports = {
         }        
     },
 
+    updateProduct: async (req, res) => {
+        try {
+            let {_id, TenSP, IdHangSX, IdLoaiSP, sizes, Image, ImageSlider, MoTa, MoTaChiTiet, GiamGiaSP} = req.body
+
+            let updateTL = await SanPham.updateOne({_id: _id},{TenSP, IdHangSX, IdLoaiSP, sizes, Image, ImageSlider, MoTa, MoTaChiTiet, GiamGiaSP})
+
+            if(updateTL) {
+                return res.status(200).json({
+                    data: updateTL,
+                    message: "Chỉnh sửa sản phẩm thành công"
+                })
+            } else {
+                return res.status(404).json({                
+                    message: "Chỉnh sửa sản phẩm thất bại"
+                })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }
+    },
+
     deleteProduct: async (req, res) => {
         try {
             const _id = req.params.id
