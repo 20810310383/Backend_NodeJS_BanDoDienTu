@@ -248,6 +248,9 @@ module.exports = {
                     return res.status(400).json({ message: 'Dữ liệu size, quantity, price không hợp lệ, số lượng không khớp.' });
                 }
 
+                // Tính tổng số lượng tồn kho từ tất cả các quantity
+                const totalQuantity = quantities.reduce((acc, quantity) => acc + quantity, 0);
+
                 // Tạo sản phẩm
                 const newProduct = new SanPham({
                     TenSP: product.TenSP,
@@ -261,7 +264,8 @@ module.exports = {
                         size: size,
                         quantity: quantities[index],
                         price: prices[index]
-                    }))
+                    })),
+                    SoLuongTon: totalQuantity  
                 });
     
                 // Tạo sản phẩm từ dữ liệu trong Excel
