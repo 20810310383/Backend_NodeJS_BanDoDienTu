@@ -6,7 +6,7 @@ module.exports = {
 
     getProducts: async (req, res) => {
         try {
-            const { page, limit, TenSP, sort, order, locTheoLoai } = req.query; 
+            const { page, limit, TenSP, sort, order, locTheoLoai, locTheoGia } = req.query; 
 
             // Chuyển đổi thành số
             const pageNumber = parseInt(page, 10);
@@ -35,16 +35,32 @@ module.exports = {
                 query.IdLoaiSP = { $in: locTheoLoaiArray }; // Dùng toán tử $in để lọc theo mảng các ObjectId
             }
 
-
             let sortOrder = 1; // tang dn
             if (order === 'desc') {
                 sortOrder = -1; 
             }
-            console.log("sortOrder: ", sortOrder);
-            console.log("locTheoLoai: ", locTheoLoai);
+
+            // lọc sản phẩm theo giá từ X đến Y
+            console.log("locTheoGia: ", locTheoGia);
+            if (locTheoGia) {
+                let convert_string = locTheoGia.replace(/[^\d-]/g, '');
+                let valuesArray = convert_string.split('-');
+                let giatri1 = parseFloat(valuesArray[0]);
+                let giatri2 = parseFloat(valuesArray[1]);
             
-
-
+                // Lọc sản phẩm có giá trong sizes[0].price nằm trong khoảng giatri1 và giatri2
+                if (convert_string) {
+                    query.sizes = {
+                        $elemMatch: {
+                            price: { $gte: giatri1, $lte: giatri2 }
+                        }
+                    };
+                }
+            }
+           
+            console.log("sortOrder: ", sortOrder);
+            console.log("locTheoLoai: ", locTheoLoai);            
+            
             let sp = await SanPham.find(query)
                 .populate("IdHangSX IdLoaiSP")
                 .skip(skip)
