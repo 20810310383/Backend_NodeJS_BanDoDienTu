@@ -1,5 +1,9 @@
 const SanPham = require('../../model/SanPham');
-
+const path = require('path');
+const xlsx = require('xlsx');
+const fs = require('fs');
+const LoaiSP = require('../../model/LoaiSP');
+const HangSX = require('../../model/HangSX');
 require('dotenv').config();
 
 module.exports = {
@@ -191,6 +195,105 @@ module.exports = {
                 message: "Có lỗi xảy ra.",
                 error: error.message,
             });
+        }
+    },
+
+    // Xử lý file Excel và lưu sản phẩm vào MongoDB
+    importProductsFromExcel: async (req, res) => {
+        // if (!req.file) {
+        //     return res.status(400).json({ message: 'Không tìm thấy file Excel để tải lên.' });
+        // }
+         // Lấy tên file gốc từ frontend
+        const originalFileName = req.body.originalFileName;  // Tên file gốc từ frontend
+        console.log('Original file name:', originalFileName);
+
+        console.log('Uploaded file:', req.file);
+        const filePath = path.join(__dirname, '../../public/excel/', originalFileName);
+        console.log("filePath: ",filePath);        
+        try {
+            const workbook = xlsx.readFile(filePath); // Đọc file Excel
+            const sheetName = workbook.SheetNames[0]; // Lấy sheet đầu tiên
+            const worksheet = workbook.Sheets[sheetName];
+            const data = xlsx.utils.sheet_to_json(worksheet); // Chuyển dữ liệu sheet thành JSON
+            console.log("data: ",data);
+            
+            const products = [];
+            for (let i = 0; i < data.length; i++) {
+                const product = data[i];
+                
+                // Kiểm tra thể loại sản phẩm
+                console.log("product: ",product);                
+                const category = await LoaiSP.findOne({ TenLoaiSP: product.IdLoaiSP });
+                if (!category) {
+                    return res.status(400).json({ message: `Thể loại không hợp lệ: ${product.IdLoaiSP}` });
+                }
+    
+                // Kiểm tra hãng sản xuất
+                const brand = await HangSX.findOne({ TenHangSX: product.IdHangSX });
+                if (!brand) {
+                    return res.status(400).json({ message: `Hãng sản xuất không hợp lệ: ${product.IdHangSX}` });
+                }
+
+                // Chuyển các thông tin size, quantity, price thành mảng                
+                const sizes = product.size ? product.size.split(',').map(size => size.trim()) : []; // Tách các size
+                const quantities = product.quantity ? String(product.quantity).split(',').map(quantity => parseInt(quantity.trim())) : []; // Chuyển quantity thành chuỗi và tách
+                const prices = product.price ? String(product.price).split(',').map(price => parseFloat(price.trim())) : []; // Chuyển price thành chuỗi và tách
+
+                console.log("product.size:", product.size);
+                console.log("product.quantity:", product.quantity);
+                console.log("product.price:", product.price);
+
+                // Kiểm tra rằng số lượng các phần tử là khớp nhau
+                if (sizes.length !== quantities.length || sizes.length !== prices.length) {
+                    return res.status(400).json({ message: 'Dữ liệu size, quantity, price không hợp lệ, số lượng không khớp.' });
+                }
+
+                // Tạo sản phẩm
+                const newProduct = new SanPham({
+                    TenSP: product.TenSP,
+                    // GiaBan: product.GiaBan,
+                    GiamGiaSP: product.GiamGiaSP || 0,
+                    MoTa: product.MoTa || 'Không có mô tả',
+                    MoTaChiTiet: product.MoTaChiTiet || 'Không có mô tả chi tiết',
+                    IdHangSX: brand._id,
+                    IdLoaiSP: category._id,
+                    sizes: sizes.map((size, index) => ({
+                        size: size,
+                        quantity: quantities[index],
+                        price: prices[index]
+                    }))
+                });
+    
+                // Tạo sản phẩm từ dữ liệu trong Excel
+                const newProduct1 = new SanPham({
+                    TenSP: product.TenSP,
+                    // GiaBan: product.GiaBan,
+                    GiamGiaSP: product.GiamGiaSP || 0,
+                    MoTa: product.MoTa || 'Không có mô tả',
+                    MoTaChiTiet: product.MoTaChiTiet || 'Không có mô tả chi tiết',
+                    IdHangSX: brand._id,
+                    IdLoaiSP: category._id,
+                    sizes: [{
+                        size: product.size,
+                        quantity: product.quantity,
+                        price: product.price
+                    }]
+                });
+    
+                products.push(newProduct); // Thêm sản phẩm vào mảng
+            }
+            console.log("products: ",products);      
+    
+            // Lưu tất cả sản phẩm vào MongoDB
+            await SanPham.insertMany(products);   
+            
+            // Xóa file Excel sau khi xử lý xong
+            fs.unlinkSync(filePath); // Xóa file Excel tạm sau khi import
+    
+            res.status(200).json({ message: 'Import sản phẩm thành công', data: products });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Có lỗi xảy ra khi import sản phẩm', error: error.message });
         }
     },
 }

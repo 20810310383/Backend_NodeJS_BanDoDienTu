@@ -28,7 +28,8 @@
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-oauth2": "^1.8.0",
-    "rootpath": "^0.1.2"
+    "rootpath": "^0.1.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.8",

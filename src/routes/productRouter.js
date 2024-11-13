@@ -1,5 +1,6 @@
 const express = require("express");
 import product from '../controllers/Product/product.controller';
+import { uploadExcel, uploadExcelFile } from '../controllers/Upload/upload.controller';
 const router = express.Router();
 
 // find all product
@@ -13,5 +14,13 @@ router.put("/update-product", product.updateProduct );
 
 // delete product
 router.delete("/delete-product/:id", product.deleteProduct );
+
+// Route import sản phẩm từ file Excel
+// router.post('/import-products', uploadExcel.single('file'), product.importProductsFromExcel);
+
+router.post('/upload-excel', uploadExcelFile);
+
+// Route để upload file Excel
+router.post('/import-products', uploadExcel, product.importProductsFromExcel); // Đảm bảo gọi middleware uploadExcel trước
 
 module.exports = router;
