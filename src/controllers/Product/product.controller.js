@@ -200,10 +200,7 @@ module.exports = {
 
     // Xử lý file Excel và lưu sản phẩm vào MongoDB
     importProductsFromExcel: async (req, res) => {
-        // if (!req.file) {
-        //     return res.status(400).json({ message: 'Không tìm thấy file Excel để tải lên.' });
-        // }
-         // Lấy tên file gốc từ frontend
+        // Lấy tên file gốc từ frontend
         const originalFileName = req.body.originalFileName;  // Tên file gốc từ frontend
         console.log('Original file name:', originalFileName);
 
