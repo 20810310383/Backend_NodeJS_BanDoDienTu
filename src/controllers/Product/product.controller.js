@@ -268,22 +268,6 @@ module.exports = {
                     SoLuongTon: totalQuantity  
                 });
     
-                // Tạo sản phẩm từ dữ liệu trong Excel
-                const newProduct1 = new SanPham({
-                    TenSP: product.TenSP,
-                    // GiaBan: product.GiaBan,
-                    GiamGiaSP: product.GiamGiaSP || 0,
-                    MoTa: product.MoTa || 'Không có mô tả',
-                    MoTaChiTiet: product.MoTaChiTiet || 'Không có mô tả chi tiết',
-                    IdHangSX: brand._id,
-                    IdLoaiSP: category._id,
-                    sizes: [{
-                        size: product.size,
-                        quantity: product.quantity,
-                        price: product.price
-                    }]
-                });
-    
                 products.push(newProduct); // Thêm sản phẩm vào mảng
             }
             console.log("products: ",products);      
