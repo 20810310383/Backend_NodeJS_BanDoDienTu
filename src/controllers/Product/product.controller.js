@@ -232,18 +232,22 @@ module.exports = {
                 }
 
                 // Chuyển các thông tin size, quantity, price thành mảng                
-                const sizes = product.size ? product.size.split(',').map(size => size.trim()) : []; // Tách các size
-                const quantities = product.quantity ? String(product.quantity).split(',').map(quantity => parseInt(quantity.trim())) : []; // Chuyển quantity thành chuỗi và tách
-                const prices = product.price ? String(product.price).split(',').map(price => parseFloat(price.trim())) : []; // Chuyển price thành chuỗi và tách
+                const sizes = product.size ? product.size.replace(/,\s*$/, '').split(',').map(size => size.trim()) : []; // Tách các size
+                const quantities = product.quantity ? String(product.quantity).replace(/,\s*$/, '').split(',').map(quantity => parseInt(quantity.trim())) : []; // Chuyển quantity thành chuỗi và tách
+                const prices = product.price ? String(product.price)
+                    .replace(/,\s*$/, '')  // Loại bỏ dấu phẩy thừa cuối chuỗi (nếu có)
+                    .split(',')  // Tách chuỗi theo dấu phẩy
+                    .map(price => parseFloat(price.trim()))  // Chuyển đổi từng giá trị thành float
+                : []; // Chuyển price thành chuỗi và tách
 
                 console.log("product.size:", product.size);
                 console.log("product.quantity:", product.quantity);
                 console.log("product.price:", product.price);
 
                 // Kiểm tra rằng số lượng các phần tử là khớp nhau
-                if (sizes.length !== quantities.length || sizes.length !== prices.length) {
-                    return res.status(400).json({ message: 'Dữ liệu size, quantity, price không hợp lệ, số lượng không khớp.' });
-                }
+                // if (sizes.length !== quantities.length || sizes.length !== prices.length) {
+                //     return res.status(400).json({ message: 'Dữ liệu size, quantity, price không hợp lệ, số lượng không khớp.' });
+                // }
 
                 // Tính tổng số lượng tồn kho từ tất cả các quantity
                 const totalQuantity = quantities.reduce((acc, quantity) => acc + quantity, 0);
