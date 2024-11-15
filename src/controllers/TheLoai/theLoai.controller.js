@@ -68,7 +68,7 @@ module.exports = {
 
     createTheLoai: async (req, res) => {
         try {
-            let {TenLoaiSP, Icon} = req.body            
+            let {TenLoaiSP, Icon, Image} = req.body            
 
             let checkTenTL = await LoaiSP.findOne({TenLoaiSP: TenLoaiSP})
             if(checkTenTL){
@@ -77,7 +77,7 @@ module.exports = {
                 })
             }
 
-            let createTL = await LoaiSP.create({TenLoaiSP, Icon})
+            let createTL = await LoaiSP.create({TenLoaiSP, Icon, Image})
 
             if(createTL){
                 return res.status(200).json({
@@ -103,9 +103,9 @@ module.exports = {
 
     updateTheLoai: async (req, res) => {
         try {
-            let {_id, TenLoaiSP, Icon} = req.body
+            let {_id, TenLoaiSP, Icon, Image} = req.body
 
-            let updateTL = await LoaiSP.updateOne({_id: _id},{TenLoaiSP, Icon})
+            let updateTL = await LoaiSP.updateOne({_id: _id},{TenLoaiSP, Icon, Image})
 
             if(updateTL) {
                 return res.status(200).json({

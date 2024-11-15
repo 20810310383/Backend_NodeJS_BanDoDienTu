@@ -24,6 +24,7 @@ connectDB();
 // Cài đặt CORS
 const allowedOrigins = [
     'http://localhost:3003', // Local development
+    'http://localhost:3004', // Local development
 ];
 
 app.use(cors({

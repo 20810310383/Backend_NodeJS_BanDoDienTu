@@ -5,6 +5,7 @@ const LoaiSP_Schema = new mongoose.Schema(
     {
         TenLoaiSP: { type: String, required: false },
         Icon: String,
+        Image: String,
     },
     { 
         timestamps: true,   // createAt, updateAt
