@@ -70,6 +70,25 @@ SanPham_Schema.post('findOneAndUpdate', async function(doc, next) {
     next(); // Chuyển điều khiển sang middleware tiếp theo (nếu có)
 });
 
+// Middleware trong schema SanPham khi tạo sản phẩm mới
+SanPham_Schema.post('save', async function (doc) {
+    // Lấy loại sản phẩm (IdLoaiSP) từ sản phẩm mới
+    const loaiSPIds = doc.IdLoaiSP;
+
+    // Cập nhật trường totalProducts cho mỗi loại sản phẩm
+    for (const loaiSPId of loaiSPIds) {
+        await LoaiSP.findByIdAndUpdate(loaiSPId, {
+            $inc: { totalProducts: 1 },  // Tăng tổng số sản phẩm lên 1
+        });
+    }
+});
+
+
+
+
+
+
+
 
 // Override all methods
 SanPham_Schema.plugin(mongoose_delete, { overrideMethods: 'all' });

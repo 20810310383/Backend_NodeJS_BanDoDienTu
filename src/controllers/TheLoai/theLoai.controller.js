@@ -1,4 +1,5 @@
 const LoaiSP = require('../../model/LoaiSP');
+const SanPham = require('../../model/SanPham');
 
 require('dotenv').config();
 
@@ -6,11 +7,11 @@ module.exports = {
 
     getTheLoai: async (req, res) => {
         try {
-            const { page, limit, TenLoaiSP, sort, order } = req.query; 
+            let { page, limit, TenLoaiSP, sort, order } = req.query; 
 
             // Chuyển đổi thành số
             const pageNumber = parseInt(page, 10);
-            const limitNumber = parseInt(limit, 10);
+            const limitNumber = parseInt(limit, 10);           
 
             // Tính toán số bản ghi bỏ qua
             const skip = (pageNumber - 1) * limitNumber;
@@ -32,11 +33,58 @@ module.exports = {
             if (order === 'desc') {
                 sortOrder = -1; 
             }
-            console.log("sortOrder: ", sortOrder);
+            console.log("sortOrder: ", sortOrder);      
             
-
+            // const loaisp = await LoaiSP.aggregate([
+            //     // Tìm tất cả các thể loại thỏa mãn điều kiện tìm kiếm
+            //     {
+            //         $match: query
+            //     },
+            //     // Thực hiện phép join với collection SanPham để lấy tất cả sản phẩm liên kết với thể loại
+            //     {
+            //         $lookup: {
+            //             from: 'sanphams',  // Tên collection sản phẩm
+            //             localField: '_id',
+            //             foreignField: 'IdLoaiSP',  // Trường liên kết với loại sản phẩm
+            //             as: 'products'  // Kết quả join sẽ lưu vào trường `products`
+            //         }
+            //     },
+            //     // Tính toán `totalProducts` là số sản phẩm trong mỗi loại và lấy thêm trường Image
+            //     {
+            //         $project: {
+            //             TenLoaiSP: 1,
+            //             Image: 1,  // Thêm trường Image vào kết quả
+            //             Icon: 1,  // Thêm trường Image vào kết quả
+            //             // totalProducts: { $size: '$products' }  // Đếm số sản phẩm trong mỗi loại
+            //             totalProducts: { 
+            //                 $toString: { $size: '$products' }  // Chuyển đổi số lượng sản phẩm thành chuỗi
+            //             }
+            //         }
+            //     },
+            //     // Sắp xếp theo trường `sort` và `order`
+            //     {
+            //         $sort: {
+            //             [sort]: sortOrder
+            //         }
+            //     },
+            //     // Thực hiện phân trang
+            //     {
+            //         $skip: skip
+            //     },
+            //     {
+            //         $limit: limitNumber
+            //     }
+            // ]); 
 
             let loaisp = await LoaiSP.find(query).skip(skip).limit(limitNumber).sort({ [sort]: sortOrder })
+
+            // Tính tổng số sản phẩm cho mỗi thể loại
+            const loaiSPsWithTotal = await Promise.all(
+                loaisp.map(async (item) => {
+                    const totalProducts = await SanPham.countDocuments({ IdLoaiSP: item._id });
+                    return { ...item.toObject(), totalProducts: totalProducts.toString() }; // Kết hợp tổng sản phẩm vào item
+                })
+            );
 
             const totalLoaiSP = await LoaiSP.countDocuments(query); // Đếm tổng số chức vụ
 
@@ -46,7 +94,7 @@ module.exports = {
                 return res.status(200).json({
                     message: "Đã tìm ra thể loại",
                     errCode: 0,
-                    data: loaisp,
+                    data: loaiSPsWithTotal,     // Trả về các thể loại có kèm tổng số sản phẩm
                     totalLoaiSP,
                     totalPages,
                     currentPage: pageNumber,

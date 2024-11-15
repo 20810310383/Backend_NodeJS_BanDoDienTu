@@ -6,6 +6,7 @@ const LoaiSP_Schema = new mongoose.Schema(
         TenLoaiSP: { type: String, required: false },
         Icon: String,
         Image: String,
+        totalProducts: { type: Number, default: 0 },  // Thay đổi từ String sang Number
     },
     { 
         timestamps: true,   // createAt, updateAt
