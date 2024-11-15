@@ -285,4 +285,41 @@ module.exports = {
             res.status(500).json({ message: 'Có lỗi xảy ra khi import sản phẩm', error: error.message });
         }
     },
+
+    getProductToCategoryNoiBat: async (req, res) => {
+        try {
+            const {IdLoaiSP} = req.query
+            console.log("id: ", IdLoaiSP);
+            
+            if (!IdLoaiSP) {
+                return res.status(400).json({ message: "IdLoaiSP is required!" });
+            }
+
+            // Nếu IdLoaiSP là một chuỗi, ta sẽ chuyển nó thành mảng
+            const idLoaiSPArray = IdLoaiSP.split(','); // Tách chuỗi thành mảng nếu cần
+
+            let sp = await SanPham.find({ 
+                IdLoaiSP: { $in: idLoaiSPArray },
+                SoLuongBan: { $gt: 2 }  // Tìm các sản phẩm có SoLuongBan lớn hơn 2
+            }).populate("IdHangSX IdLoaiSP")
+
+            if(sp && sp.length > 0) {
+                return res.status(200).json({
+                    data: sp,
+                    message: "Bạn đã tìm sản phẩm nổi bật thành công!"
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Bạn đã tìm sản phẩm thất bại!"
+                })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }
+    },
 }
