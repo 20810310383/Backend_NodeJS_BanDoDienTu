@@ -334,4 +334,30 @@ module.exports = {
             });
         }
     },
+
+    getDetailSP: async (req, res) => {
+        try {
+            const {id} = req.query
+            console.log("id: ", id);
+
+            let sp = await SanPham.findById(id).populate("IdHangSX IdLoaiSP")
+            if(sp) {
+                return res.status(200).json({
+                    data: sp,
+                    message: "Đã có thông tin chi tiết!"
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Thông tin chi tiết thất bại!"
+                })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }
+    }
 }

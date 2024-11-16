@@ -26,4 +26,6 @@ router.post('/import-products', uploadExcel, product.importProductsFromExcel); /
 // tìm sản phẩm thông qua idloaisp và bán trên 10 sp
 router.get("/get-product-idloaisp-noibat", product.getProductToCategoryNoiBat );
 
+router.get("/get-detail-product", product.getDetailSP );
+
 module.exports = router;
