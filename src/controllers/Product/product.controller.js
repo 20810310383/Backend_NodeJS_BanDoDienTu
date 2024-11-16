@@ -10,7 +10,7 @@ module.exports = {
 
     getProducts: async (req, res) => {
         try {
-            const { page, limit, TenSP, sort, order, locTheoLoai, locTheoGia } = req.query; 
+            const { page, limit, TenSP, sort, order, locTheoLoai, locTheoGia, SoLuotDanhGia, SoLuotBan, GiamGiaSP } = req.query; 
 
             // Chuyển đổi thành số
             const pageNumber = parseInt(page, 10);
@@ -63,7 +63,19 @@ module.exports = {
             }
            
             console.log("sortOrder: ", sortOrder);
-            console.log("locTheoLoai: ", locTheoLoai);            
+            console.log("locTheoLoai: ", locTheoLoai);    
+            
+            if (SoLuotDanhGia) {
+                query.SoLuotDanhGia = { $gt: SoLuotDanhGia };  // Lọc sản phẩm có số lượng đánh giá lớn hơn 10
+            }
+
+            if (SoLuotBan) {
+                query.SoLuongBan = { $gt: SoLuotBan };  // Lọc sản phẩm có số lượng bán lớn hơn 10
+            }
+
+            if (GiamGiaSP) {
+                query.GiamGiaSP = { $gt: GiamGiaSP };  // Lọc sản phẩm có GiamGiaSP lớn hơn 20
+            }
             
             let sp = await SanPham.find(query)
                 .populate("IdHangSX IdLoaiSP")
