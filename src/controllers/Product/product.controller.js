@@ -338,7 +338,7 @@ module.exports = {
     getDetailSP: async (req, res) => {
         try {
             const {id} = req.query
-            console.log("id: ", id);
+            console.log("id getDetailSP: ", id);
 
             let sp = await SanPham.findById(id).populate("IdHangSX IdLoaiSP")
             if(sp) {
@@ -359,5 +359,41 @@ module.exports = {
                 error: error.message,
             });
         }
-    }
+    },
+
+    getProductToCategorySPLienQuan: async (req, res) => {
+        try {
+            const {IdLoaiSP} = req.query
+            console.log("id getProductToCategorySPLienQuan: ", IdLoaiSP);
+            
+            if (!IdLoaiSP) {
+                return res.status(400).json({ message: "IdLoaiSP is required!" });
+            }
+
+            // Nếu IdLoaiSP là một chuỗi, ta sẽ chuyển nó thành mảng
+            const idLoaiSPArray = IdLoaiSP.split(','); // Tách chuỗi thành mảng nếu cần
+
+            let sp = await SanPham.find({ 
+                IdLoaiSP: { $in: idLoaiSPArray },
+            }).populate("IdHangSX IdLoaiSP")
+
+            if(sp && sp.length > 0) {
+                return res.status(200).json({
+                    data: sp,
+                    message: "Bạn đã tìm sản phẩm liên quan thành công!"
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Bạn đã tìm sản phẩm thất bại!"
+                })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }
+    },
 }
