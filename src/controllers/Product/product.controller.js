@@ -10,7 +10,9 @@ module.exports = {
 
     getProducts: async (req, res) => {
         try {
-            const { page, limit, TenSP, sort, order, locTheoLoai, locTheoGia, SoLuotDanhGia, SoLuotBan, GiamGiaSP, tu, den } = req.query; 
+            const { page, limit, TenSP, sort, order, 
+                locTheoLoai, locTheoGia, locTheoHangSX,
+                SoLuotDanhGia, SoLuotBan, GiamGiaSP, tu, den } = req.query; 
 
             // Chuyển đổi thành số
             const pageNumber = parseInt(page, 10);
@@ -39,13 +41,21 @@ module.exports = {
                 query.IdLoaiSP = { $in: locTheoLoaiArray }; // Dùng toán tử $in để lọc theo mảng các ObjectId
             }
 
+            // Tìm kiếm theo IdHangSX nếu có
+            if (locTheoHangSX) {
+                // Chuyển 'locTheoHangSX' từ string sang mảng ObjectId
+                const locTheoHangSXArray = Array.isArray(locTheoHangSX) ? locTheoHangSX : JSON.parse(locTheoHangSX);
+
+                query.IdHangSX = { $in: locTheoHangSXArray }; // Dùng toán tử $in để lọc theo mảng các ObjectId
+            }
+
+            // tang/giam
             let sortOrder = 1; // tang dn
             if (order === 'desc') {
                 sortOrder = -1; 
             }
 
             // lọc sản phẩm theo giá từ X đến Y
-            console.log("locTheoGia: ", locTheoGia);
             if (locTheoGia) {
                 let convert_string = locTheoGia.replace(/[^\d-]/g, '');
                 let valuesArray = convert_string.split('-');
