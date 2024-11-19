@@ -490,6 +490,7 @@ module.exports = {
             query.IdLoaiSP = { $in: idLoaiSPArray };
             
             let sp = await SanPham.find(query)
+                .collation({ locale: 'vi', strength: 1 }) 
                 .populate("IdHangSX IdLoaiSP")
                 .skip(skip)
                 .limit(limitNumber)
