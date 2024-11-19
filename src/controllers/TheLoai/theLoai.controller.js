@@ -199,4 +199,29 @@ module.exports = {
             });
         }
     },
+
+    findOneCategory: async (req, res) => {
+        try {
+            const _id = req.query.IdLoaiSP
+            let category = await LoaiSP.findOne({_id: _id})
+
+            if(category) {
+                return res.status(200).json({
+                    data: category,
+                    message: "Bạn đã tìm Thể loại thành công!"
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Bạn đã tìm Thể loại thất bại!"
+                })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }
+    }
 }

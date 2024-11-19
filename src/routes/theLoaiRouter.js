@@ -4,6 +4,7 @@ const router = express.Router();
 
 // find all the loai
 router.get("/get-the-loai", theLoai.getTheLoai );
+router.get("/get-one-the-loai", theLoai.findOneCategory );
 
 // tao moi the loai
 router.post("/create-the-loai", theLoai.createTheLoai );

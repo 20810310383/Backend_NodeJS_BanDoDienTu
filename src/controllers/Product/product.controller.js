@@ -322,8 +322,17 @@ module.exports = {
 
     getProductToCategoryNoiBat: async (req, res) => {
         try {
-            const {IdLoaiSP} = req.query
+            const { page, limit, TenSP, sort, order, 
+                locTheoLoai, locTheoGia, locTheoHangSX,
+                SoLuotDanhGia, SoLuotBan, GiamGiaSP, tu, den, IdLoaiSP } = req.query; 
             console.log("id: ", IdLoaiSP);
+
+            // Chuyển đổi thành số
+            const pageNumber = parseInt(page, 10);
+            const limitNumber = parseInt(limit, 10);
+
+            // Tính toán số bản ghi bỏ qua
+            const skip = (pageNumber - 1) * limitNumber;
             
             if (!IdLoaiSP) {
                 return res.status(400).json({ message: "IdLoaiSP is required!" });
@@ -385,7 +394,17 @@ module.exports = {
 
     getProductToCategorySPLienQuan: async (req, res) => {
         try {
-            const {IdLoaiSP} = req.query
+            const { page, limit, TenSP, sort, order, 
+                locTheoLoai, locTheoGia, locTheoHangSX,
+                SoLuotDanhGia, SoLuotBan, GiamGiaSP, tu, den, IdLoaiSP } = req.query; 
+            console.log("id: ", IdLoaiSP);
+
+            // Chuyển đổi thành số
+            const pageNumber = parseInt(page, 10);
+            const limitNumber = parseInt(limit, 10);
+
+            // Tính toán số bản ghi bỏ qua
+            const skip = (pageNumber - 1) * limitNumber;
             console.log("id getProductToCategorySPLienQuan: ", IdLoaiSP);
             
             if (!IdLoaiSP) {
@@ -395,20 +414,132 @@ module.exports = {
             // Nếu IdLoaiSP là một chuỗi, ta sẽ chuyển nó thành mảng
             const idLoaiSPArray = IdLoaiSP.split(','); // Tách chuỗi thành mảng nếu cần
 
-            let sp = await SanPham.find({ 
-                IdLoaiSP: { $in: idLoaiSPArray },
-            }).populate("IdHangSX IdLoaiSP")
+            // ----------------------
+            // Tạo query tìm kiếm
+            const query = {};
+            if (TenSP) {
+                const searchKeywords = (TenSP || '')
+                const keywordsArray = searchKeywords.trim().split(/\s+/);
 
-            if(sp && sp.length > 0) {
+                const searchConditions = keywordsArray.map(keyword => ({
+                    TenSP: { $regex: keyword, $options: 'i' } // Tìm kiếm không phân biệt chữ hoa chữ thường
+                }));
+
+                query.$or = searchConditions;
+            }
+
+            // Tìm kiếm theo IdHangSX nếu có
+            if (locTheoHangSX) {
+                // Chuyển 'locTheoHangSX' từ string sang mảng ObjectId
+                const locTheoHangSXArray = Array.isArray(locTheoHangSX) ? locTheoHangSX : JSON.parse(locTheoHangSX);
+
+                query.IdHangSX = { $in: locTheoHangSXArray }; // Dùng toán tử $in để lọc theo mảng các ObjectId
+            }
+
+            // tang/giam
+            let sortOrder = 1; // tang dn
+            if (order === 'desc') {
+                sortOrder = -1; 
+            }
+
+            // lọc sản phẩm theo giá từ X đến Y
+            if (locTheoGia) {
+                let convert_string = locTheoGia.replace(/[^\d-]/g, '');
+                let valuesArray = convert_string.split('-');
+                let giatri1 = parseFloat(valuesArray[0]);
+                let giatri2 = parseFloat(valuesArray[1]);
+            
+                // Lọc sản phẩm có giá trong sizes[0].price nằm trong khoảng giatri1 và giatri2
+                if (convert_string) {
+                    query.sizes = {
+                        $elemMatch: {
+                            price: { $gte: giatri1, $lte: giatri2 }
+                        }
+                    };
+                }
+            }
+           
+            if(tu && den) {
+                let giatri3 = parseFloat(tu);
+                let giatri4 = parseFloat(den);
+                console.log("giatri3: ", giatri3);
+                console.log("giatri4: ", giatri4);
+                // Lọc sản phẩm có giá trong sizes[0].price nằm trong khoảng giatri1 và giatri2
+                if (giatri3 && giatri4) {
+                    query.sizes = {
+                        $elemMatch: {
+                            price: { $gte: giatri3, $lte: giatri4 }
+                        }
+                    };
+                }
+            }   
+            
+            if (SoLuotDanhGia) {
+                query.SoLuotDanhGia = { $gt: SoLuotDanhGia };  // Lọc sản phẩm có số lượng đánh giá lớn hơn 10
+            }
+
+            if (SoLuotBan) {
+                query.SoLuongBan = { $gt: SoLuotBan };  // Lọc sản phẩm có số lượng bán lớn hơn 10
+            }
+
+            if (GiamGiaSP) {
+                query.GiamGiaSP = { $gt: GiamGiaSP };  // Lọc sản phẩm có GiamGiaSP lớn hơn 20
+            }
+
+            // Thêm điều kiện lọc theo loại sản phẩm (IdLoaiSP)
+            query.IdLoaiSP = { $in: idLoaiSPArray };
+            
+            let sp = await SanPham.find(query)
+                .populate("IdHangSX IdLoaiSP")
+                .skip(skip)
+                .limit(limitNumber)
+                .sort({ [sort]: sortOrder })
+
+            // Sắp xếp mảng sizes theo price từ thấp đến cao
+            sp = sp.map(product => {
+                // Sort sizes array based on price (ascending)
+                if (product.sizes && product.sizes.length > 0) {
+                    product.sizes.sort((a, b) => a.price - b.price); // Sort sizes array by price
+                }
+                return product;
+            });
+
+            const totalSanPham = await SanPham.countDocuments(query); // Đếm tổng số chức vụ
+
+            const totalPages = Math.ceil(totalSanPham / limitNumber); // Tính số trang
+
+            if(sp) {
                 return res.status(200).json({
+                    message: "Đã tìm ra products",
+                    errCode: 0,
                     data: sp,
-                    message: "Bạn đã tìm sản phẩm liên quan thành công!"
+                    totalSanPham,
+                    totalPages,
+                    currentPage: pageNumber,
                 })
             } else {
                 return res.status(500).json({
-                    message: "Bạn đã tìm sản phẩm thất bại!"
+                    message: "Tìm products thất bại!",
+                    errCode: -1,
                 })
             }
+            //=====================
+
+
+            // let sp = await SanPham.find({ 
+            //     IdLoaiSP: { $in: idLoaiSPArray },
+            // }).populate("IdHangSX IdLoaiSP")
+
+            // if(sp && sp.length > 0) {
+            //     return res.status(200).json({
+            //         data: sp,
+            //         message: "Bạn đã tìm sản phẩm liên quan thành công!"
+            //     })
+            // } else {
+            //     return res.status(500).json({
+            //         message: "Bạn đã tìm sản phẩm thất bại!"
+            //     })
+            // }
 
         } catch (error) {
             console.error(error);
