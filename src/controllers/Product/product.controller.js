@@ -10,7 +10,7 @@ module.exports = {
 
     getProducts: async (req, res) => {
         try {
-            const { page, limit, TenSP, sort, order, locTheoLoai, locTheoGia, SoLuotDanhGia, SoLuotBan, GiamGiaSP } = req.query; 
+            const { page, limit, TenSP, sort, order, locTheoLoai, locTheoGia, SoLuotDanhGia, SoLuotBan, GiamGiaSP, tu, den } = req.query; 
 
             // Chuyển đổi thành số
             const pageNumber = parseInt(page, 10);
@@ -62,8 +62,20 @@ module.exports = {
                 }
             }
            
-            console.log("sortOrder: ", sortOrder);
-            console.log("locTheoLoai: ", locTheoLoai);    
+            if(tu && den) {
+                let giatri3 = parseFloat(tu);
+                let giatri4 = parseFloat(den);
+                console.log("giatri3: ", giatri3);
+                console.log("giatri4: ", giatri4);
+                // Lọc sản phẩm có giá trong sizes[0].price nằm trong khoảng giatri1 và giatri2
+                if (giatri3 && giatri4) {
+                    query.sizes = {
+                        $elemMatch: {
+                            price: { $gte: giatri3, $lte: giatri4 }
+                        }
+                    };
+                }
+            }   
             
             if (SoLuotDanhGia) {
                 query.SoLuotDanhGia = { $gt: SoLuotDanhGia };  // Lọc sản phẩm có số lượng đánh giá lớn hơn 10
