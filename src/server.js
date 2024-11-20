@@ -6,6 +6,7 @@ const adminRouter = require('./routes/loginAdminRouter');
 const categoryRouter = require('./routes/theLoaiRouter');
 const hangSXRouter = require('./routes/hangSXRouter');
 const productRouter = require('./routes/productRouter');
+const khRouter = require('./routes/loginKHRouter');
 const connectDB = require('./config/connectDB');
 const cors = require('cors');
 const multer = require('multer');
@@ -23,8 +24,8 @@ connectDB();
 
 // Cài đặt CORS
 const allowedOrigins = [
-    'http://localhost:3003', // Local development
-    'http://localhost:3004', // Local development
+    'http://localhost:3006', // Local development
+    'http://localhost:3005', // Local development
 ];
 
 app.use(cors({
@@ -59,6 +60,7 @@ const routes = [
     { path: '/api/category', router: categoryRouter },
     { path: '/api/hangsx', router: hangSXRouter },
     { path: '/api/product', router: productRouter },
+    { path: '/api/acckh', router: khRouter },
 ];
   
 routes.forEach(route => app.use(route.path, route.router));

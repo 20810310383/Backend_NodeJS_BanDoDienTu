@@ -369,7 +369,7 @@ module.exports = {
     getDetailSP: async (req, res) => {
         try {
             const {id} = req.query
-            console.log("id getDetailSP: ", id);
+            console.log("id getDetailSP: ", id);            
 
             let sp = await SanPham.findById(id).populate("IdHangSX IdLoaiSP")
             if(sp) {
