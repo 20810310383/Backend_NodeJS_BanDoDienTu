@@ -10,6 +10,7 @@ const AccKH_Schema = new mongoose.Schema({
         image: { type: String },  
         tokenAccess: { type: String },                                                
         isActive: { type: Boolean, default: false},        
+        IdVoucher: [{ref: "Voucher", type: mongoose.SchemaTypes.ObjectId}],
     },
     { 
         timestamps: true,   // createAt, updateAt
