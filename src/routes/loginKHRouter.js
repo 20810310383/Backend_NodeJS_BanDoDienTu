@@ -17,6 +17,8 @@ router.get("/get-kh", accKH.getAccKH );
 // update acc kh
 router.put("/update-kh", accKH.updateAccKH );
 
+router.put("/khoa-kh", accKH.khoaAccKH );
+
 // delete acc kh
 router.delete("/delete-kh/:id", accKH.deleteAccKH );
 

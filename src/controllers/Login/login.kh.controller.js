@@ -16,6 +16,10 @@ module.exports = {
             if (!admin) {
                 return res.status(401).json({ message: 'Email không tồn tại' });
             }
+            let messError = `Tài khoản này vi phạm quy định của trang và đang bị khóa! ` + '\n' + `Vui lòng liên hệ Admin!`
+            if(admin.isActive === false) {
+                return res.status(401).json({ message: messError });
+            }
 
             const saltRounds = 10;
             const hashedPassword = await bcrypt.hash(password, saltRounds);

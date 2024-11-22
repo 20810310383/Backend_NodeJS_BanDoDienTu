@@ -35,7 +35,7 @@ module.exports = {
             const totalAccKH = await AccKH.countDocuments(query); // Đếm tổng số chức vụ
 
             const totalPages = Math.ceil(totalAccKH / limitNumber); // Tính số trang
-           
+                       
             if(accKH) {
                 return res.status(200).json({
                     message: "Đã tìm ra acc kh",
@@ -101,12 +101,34 @@ module.exports = {
             if(xoa) {
                 return res.status(200).json({
                     data: xoa,
-                    message: "Bạn đã khóa acc khách hàng thành công!"
+                    message: "Bạn đã xóa tài khoản khách hàng thành công!"
                 })
             } else {
                 return res.status(500).json({
-                    message: "Bạn đã khóa acc khách hàng thất bại!"
+                    message: "Bạn đã xóa tài khoản khách hàng thất bại!"
                 })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }
+    },
+
+    khoaAccKH: async (req, res) => {
+        try {
+            // const id = req.params.id
+            const { id, isActive } = req.body;
+
+            const updatedAccount = await AccKH.findByIdAndUpdate(id, { isActive }, { new: true });
+
+            if (updatedAccount) {
+                return res.status(200).json({ message: "Cập nhật thành công", data: updatedAccount });
+            } else {
+                return res.status(404).json({ message: "Tài khoản không tìm thấy" });
             }
 
         } catch (error) {
