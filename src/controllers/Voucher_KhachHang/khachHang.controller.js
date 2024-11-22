@@ -139,4 +139,34 @@ module.exports = {
             });
         }
     },
+
+    getOneAccKH: async (req, res) => {
+        try {
+            const id = req.query.id; 
+            console.log("id: ", id);
+                            
+            let accKH = await AccKH.find({_id: id}).populate("IdVoucher")
+                       
+            if(accKH) {
+                return res.status(200).json({
+                    message: "Đã tìm ra acc kh",
+                    errCode: 0,
+                    data: accKH,                    
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Tìm thể loại thất bại!",
+                    errCode: -1,
+                })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }        
+    },    
+  
 }

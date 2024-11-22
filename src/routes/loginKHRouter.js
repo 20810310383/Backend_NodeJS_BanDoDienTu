@@ -14,6 +14,8 @@ router.post("/logout-kh", loginKH.logoutKH );
 // find all acc kh
 router.get("/get-kh", accKH.getAccKH );
 
+router.get("/get-one-kh", accKH.getOneAccKH );
+
 // update acc kh
 router.put("/update-kh", accKH.updateAccKH );
 
