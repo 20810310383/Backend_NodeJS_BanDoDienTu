@@ -1,4 +1,5 @@
 const express = require("express");
+import { verifyGoogleToken } from '../controllers/Login/login.google.controller';
 import loginKH from '../controllers/Login/login.kh.controller';
 import accKH from '../controllers/Voucher_KhachHang/khachHang.controller';
 
@@ -23,5 +24,8 @@ router.put("/khoa-kh", accKH.khoaAccKH );
 
 // delete acc kh
 router.delete("/delete-kh/:id", accKH.deleteAccKH );
+
+// router.post("/auth/google", verifyGoogleToken );
+
 
 module.exports = router;

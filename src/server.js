@@ -8,6 +8,7 @@ const hangSXRouter = require('./routes/hangSXRouter');
 const productRouter = require('./routes/productRouter');
 const khRouter = require('./routes/loginKHRouter');
 const voucherRouter = require('./routes/voucherRouter');
+const orderRouter = require('./routes/orderRouter');
 const connectDB = require('./config/connectDB');
 const cors = require('cors');
 const multer = require('multer');
@@ -63,6 +64,7 @@ const routes = [
     { path: '/api/product', router: productRouter },
     { path: '/api/acckh', router: khRouter },
     { path: '/api/voucher', router: voucherRouter },
+    { path: '/api/order', router: orderRouter },
 ];
   
 routes.forEach(route => app.use(route.path, route.router));
