@@ -1,6 +1,7 @@
 const express = require("express");
 import { verifyGoogleToken } from '../controllers/Login/login.google.controller';
 import loginKH from '../controllers/Login/login.kh.controller';
+import { quenMatKhauKH } from '../controllers/Login/quen.mat.khau.controller';
 import accKH from '../controllers/Voucher_KhachHang/khachHang.controller';
 
 const router = express.Router();
@@ -27,5 +28,7 @@ router.delete("/delete-kh/:id", accKH.deleteAccKH );
 
 // router.post("/auth/google", verifyGoogleToken );
 
+// quên mật khẩu
+router.post("/quen-mat-khau", quenMatKhauKH)
 
 module.exports = router;

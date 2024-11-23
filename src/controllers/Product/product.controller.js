@@ -524,23 +524,6 @@ module.exports = {
                     errCode: -1,
                 })
             }
-            //=====================
-
-
-            // let sp = await SanPham.find({ 
-            //     IdLoaiSP: { $in: idLoaiSPArray },
-            // }).populate("IdHangSX IdLoaiSP")
-
-            // if(sp && sp.length > 0) {
-            //     return res.status(200).json({
-            //         data: sp,
-            //         message: "Bạn đã tìm sản phẩm liên quan thành công!"
-            //     })
-            // } else {
-            //     return res.status(500).json({
-            //         message: "Bạn đã tìm sản phẩm thất bại!"
-            //     })
-            // }
 
         } catch (error) {
             console.error(error);
