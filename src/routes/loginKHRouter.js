@@ -1,6 +1,7 @@
 const express = require("express");
 import { verifyGoogleToken } from '../controllers/Login/login.google.controller';
 import loginKH from '../controllers/Login/login.kh.controller';
+import doiThongTinKH from '../controllers/Login/doi.thong.tin.kh.controller';
 import { quenMatKhauKH } from '../controllers/Login/quen.mat.khau.controller';
 import accKH from '../controllers/Voucher_KhachHang/khachHang.controller';
 
@@ -30,5 +31,8 @@ router.delete("/delete-kh/:id", accKH.deleteAccKH );
 
 // quên mật khẩu
 router.post("/quen-mat-khau", quenMatKhauKH)
+
+// đổi thông tin khách hàng
+router.put("/doi-thong-tin", doiThongTinKH.doiThongTinKH)
 
 module.exports = router;
