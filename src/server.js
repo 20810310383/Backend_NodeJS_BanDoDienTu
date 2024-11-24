@@ -29,14 +29,13 @@ connectDB();
 const allowedOrigins = [
     'http://localhost:3006', // Local development
     'http://localhost:3008', // Local development
-    'https://bandodientu-admin.vercel.app/'
+    'https://bandodientu-admin.vercel.app'
 ];
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, origin);
+        if (!origin || allowedOrigins.includes(origin)) { // Dùng includes thay cho indexOf
+            callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
         }
