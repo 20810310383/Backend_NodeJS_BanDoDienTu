@@ -36,13 +36,25 @@ module.exports = {
 
             let idSP = req.query.idSP
             let findComment = await Comments.find({idSP: idSP}).populate("idKH idSP")
-            console.log("find: ", findComment);
-            
+            console.log("find: ", findComment);                        
+
+            // Lọc ra các phần tử có 'soSaoDanhGia' = 1, 2, 3, 4, 5 và đếm số lượng
+            let starCount = {
+                1: findComment.filter(item => item.soSaoDanhGia === "1").length,
+                2: findComment.filter(item => item.soSaoDanhGia === "2").length,
+                3: findComment.filter(item => item.soSaoDanhGia === "3").length,
+                4: findComment.filter(item => item.soSaoDanhGia === "4").length,
+                5: findComment.filter(item => item.soSaoDanhGia === "5").length,
+            };
+                   
             if(findComment){
                 return res.status(200).json({
                     message: "Tìm Bình luận thành công!",
                     errCode: 0,
-                    data: findComment
+                    data: {
+                        comments: findComment,
+                        starCount: starCount // Trả về số lượng đánh giá theo sao
+                    }
                 })
             } else {
                 return res.status(500).json({
