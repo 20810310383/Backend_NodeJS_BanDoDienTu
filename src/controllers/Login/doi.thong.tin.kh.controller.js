@@ -7,14 +7,17 @@ require('dotenv').config();
 module.exports = {
 
     doiThongTinKH: async (req, res) => {
-        const {_idAcc, email, fullName, address, phone, password, passwordMoi} = req.body 
+        const {_idAcc, email, fullName, address, phone, password, passwordMoi, image} = req.body 
+
+        console.log("image: ", image);
+        
         
         // một chuỗi đã được mã hóa có thể lưu vào cơ sở dữ liệu.
         const hashedPassword = await bcrypt.hash(passwordMoi, 10);
 
         const updateResult = await AccKH.updateOne(
             { _id: _idAcc }, 
-            { email, fullName, address, phone, password: hashedPassword }
+            { email, fullName, address, phone, password: hashedPassword, image }
         );
         
         if(updateResult) {
