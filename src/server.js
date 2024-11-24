@@ -32,7 +32,7 @@ const allowedOrigins = [
     'https://bandodientu-admin.vercel.app',
     'https://bandodientu-kt-trangchu.vercel.app',
     'https://admin-dodientu.dokhactu.site',
-    'https://shopbandodientu.dokhactu.site/'
+    'https://shopbandodientu.dokhactu.site',
 ];
 
 app.use(cors({
