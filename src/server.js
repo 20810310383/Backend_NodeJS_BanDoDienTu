@@ -30,7 +30,7 @@ const allowedOrigins = [
     'http://localhost:3006', // Local development
     'http://localhost:3008', // Local development
     'https://bandodientu-admin.vercel.app',
-    'https://bandodientu-kt-trangchu.vercel.app/'
+    'https://bandodientu-kt-trangchu.vercel.app'
 ];
 
 app.use(cors({
