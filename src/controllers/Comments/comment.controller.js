@@ -34,8 +34,19 @@ module.exports = {
     getComment: async (req, res) => {
         try {
 
-            let idSP = req.query.idSP
-            let findComment = await Comments.find({idSP: idSP}).populate("idKH idSP")
+            const { page, limit, idSP } = req.query; 
+    
+            // Chuyển đổi thành số
+            const pageNumber = parseInt(page, 10);
+            const limitNumber = parseInt(limit, 10);
+    
+            // Tính toán số bản ghi bỏ qua
+            const skip = (pageNumber - 1) * limitNumber;
+
+            let findComment = await Comments.find({ idSP: idSP })
+            .skip(skip)
+            .limit(limitNumber)
+            .populate("idKH idSP");
             console.log("find: ", findComment);                        
 
             // Lọc ra các phần tử có 'soSaoDanhGia' = 1, 2, 3, 4, 5 và đếm số lượng
@@ -46,6 +57,9 @@ module.exports = {
                 4: findComment.filter(item => item.soSaoDanhGia === "4").length,
                 5: findComment.filter(item => item.soSaoDanhGia === "5").length,
             };
+
+            // Tính tổng số bình luận
+            let totalComments = await Comments.countDocuments({ idSP: idSP });
                    
             if(findComment){
                 return res.status(200).json({
@@ -53,6 +67,9 @@ module.exports = {
                     errCode: 0,
                     data: {
                         comments: findComment,
+                        totalComments: totalComments,  // Tổng số bình luận cho sản phẩm này
+                        totalPages: Math.ceil(totalComments / limitNumber),  // Tổng số trang
+                        currentPage: pageNumber,  // Trang hiện tại
                         starCount: starCount // Trả về số lượng đánh giá theo sao
                     }
                 })
