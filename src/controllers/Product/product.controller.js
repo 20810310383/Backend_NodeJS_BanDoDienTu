@@ -24,14 +24,16 @@ module.exports = {
             // Tạo query tìm kiếm
             const query = {};
             if (TenSP) {
-                const searchKeywords = (TenSP || '')
-                const keywordsArray = searchKeywords.trim().split(/\s+/);
+                const searchKeywords = TenSP.trim().split(/\s+/).map(keyword => {
+                    // Chuyển keyword thành regex để tìm kiếm gần đúng (không phân biệt chữ hoa chữ thường)
+                    const normalizedKeyword = keyword.toLowerCase();  // Chuyển tất cả về chữ thường để không phân biệt
+                    return {
+                        TenSP: { $regex: normalizedKeyword, $options: 'i' } // 'i' giúp tìm kiếm không phân biệt chữ hoa chữ thường
+                    };
+                });
+            
 
-                const searchConditions = keywordsArray.map(keyword => ({
-                    TenSP: { $regex: keyword, $options: 'i' } // Tìm kiếm không phân biệt chữ hoa chữ thường
-                }));
-
-                query.$or = searchConditions;
+                query.$or = searchKeywords;
             }
             // Tìm kiếm theo IdLoaiSP nếu có
             if (locTheoLoai) {
