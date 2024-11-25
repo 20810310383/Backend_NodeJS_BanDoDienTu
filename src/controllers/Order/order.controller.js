@@ -136,7 +136,7 @@ const createOrder = async (req, res) => {
 
         // Tạo đơn hàng mới
         const newOrder = new Order({
-            lastName, firstName, email, address, phone, note, products, soTienGiamGia, giamGia, soTienCanThanhToan, thanhTien, tongSoLuong, idKhachHang
+            lastName, firstName, email, address, phone, note, products, soTienGiamGia, giamGia, soTienCanThanhToan, thanhTien, tongSoLuong, idKhachHang: idKhachHang || null
         });
 
         // Lưu đơn hàng vào database

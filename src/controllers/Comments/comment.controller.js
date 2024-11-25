@@ -43,6 +43,9 @@ module.exports = {
             // Tính toán số bản ghi bỏ qua
             const skip = (pageNumber - 1) * limitNumber;
 
+            let findCommentLength = await Comments.find({ idSP: idSP })
+            .populate("idKH idSP");
+
             let findComment = await Comments.find({ idSP: idSP })
             .skip(skip)
             .limit(limitNumber)
@@ -51,11 +54,11 @@ module.exports = {
 
             // Lọc ra các phần tử có 'soSaoDanhGia' = 1, 2, 3, 4, 5 và đếm số lượng
             let starCount = {
-                1: findComment.filter(item => item.soSaoDanhGia === "1").length,
-                2: findComment.filter(item => item.soSaoDanhGia === "2").length,
-                3: findComment.filter(item => item.soSaoDanhGia === "3").length,
-                4: findComment.filter(item => item.soSaoDanhGia === "4").length,
-                5: findComment.filter(item => item.soSaoDanhGia === "5").length,
+                1: findCommentLength.filter(item => item.soSaoDanhGia === "1").length,
+                2: findCommentLength.filter(item => item.soSaoDanhGia === "2").length,
+                3: findCommentLength.filter(item => item.soSaoDanhGia === "3").length,
+                4: findCommentLength.filter(item => item.soSaoDanhGia === "4").length,
+                5: findCommentLength.filter(item => item.soSaoDanhGia === "5").length,
             };
 
             // Tính tổng số bình luận
