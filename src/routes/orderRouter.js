@@ -8,5 +8,6 @@ router.post("/dat-hang", order.createOrder );
 
 router.get("/find-all-order", orderHistory.historyOrderByIdKH)
 
+router.post("/huy-order", orderHistory.handleHuyOrder );
 
 module.exports = router;

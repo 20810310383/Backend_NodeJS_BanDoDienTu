@@ -32,8 +32,13 @@ const orderSchema = new mongoose.Schema(
         },
         TinhTrangThanhToan: { 
             type: String, 
-            enum: ["Đã Thanh Toán", "Chưa Thanh Toán"], 
+            enum: ["Đã Thanh Toán", "Chưa Thanh Toán", "Chờ hoàn tiền", "Đã hoàn tiền"], 
             default: "Chưa Thanh Toán" 
+        },
+        TrangThaiHuyDon: { 
+            type: String, 
+            enum: ["Đã Hủy", "Không Hủy"], 
+            default: "Không Hủy" 
         },
     },
     { timestamps: true } // Thêm createdAt và updatedAt
