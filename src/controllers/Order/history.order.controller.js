@@ -7,7 +7,7 @@ module.exports = {
     historyOrderByIdKH: async (req, res) => {
         try {
 
-            const { page, limit, idKH } = req.query; 
+            const { page, limit, idKH, sort, order } = req.query; 
     
             // Chuyển đổi thành số
             const pageNumber = parseInt(page, 10);
@@ -15,6 +15,12 @@ module.exports = {
     
             // Tính toán số bản ghi bỏ qua
             const skip = (pageNumber - 1) * limitNumber;
+
+            // tang/giam
+            let sortOrder = 1; // tang dn
+            if (order === 'desc') {
+                sortOrder = -1; 
+            }
 
             let findOrder = await Order.find({ idKhachHang: idKH })
                 .skip(skip)
@@ -24,6 +30,7 @@ module.exports = {
                 model: 'SanPham',       // Model liên kết
                 // select: 'name price',   // Chỉ lấy các trường cần thiết từ SanPham (nếu cần)
                 }) 
+                .sort({ [sort]: sortOrder })
                 
             // Tính tổng 
             let totalOrder = await Order.countDocuments({ idKhachHang: idKH });
@@ -66,7 +73,7 @@ module.exports = {
                     errCode: -1,
                 });
             }
-            
+
             if (checkOrder && checkOrder.TinhTrangThanhToan === 'Đã Thanh Toán') {
                 // Nếu TinhTrangThanhToan đang là "Đã thanh toán", tiến hành cập nhật
                 let updateOrder = await Order.updateOne(
