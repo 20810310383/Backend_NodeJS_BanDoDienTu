@@ -84,7 +84,11 @@ routes.forEach(route => app.use(route.path, route.router));
 // Sử dụng uploadRouter
 app.use("/api/upload", uploadRouter); // Đặt đường dẫn cho upload
 
-
+app.get('/dokhactu', (req, res) => {
+    setTimeout(function() {
+        throw new Error('loi')
+    })
+})
 
 app.listen(port, () => {
     console.log("backend nodejs is running on the port:", port, `\n http://localhost:${port}`);
