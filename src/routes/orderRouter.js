@@ -12,4 +12,6 @@ router.get("/find-all-history-order", orderHistory.historyOrderAll)
 
 router.post("/huy-order", orderHistory.handleHuyOrder );
 
+router.delete("/delete-history-order/:id", orderHistory.deleteHistoryOrder );
+
 module.exports = router;

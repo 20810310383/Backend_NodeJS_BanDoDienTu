@@ -190,4 +190,29 @@ module.exports = {
             });
         }
     },
+
+    deleteHistoryOrder: async (req, res) => {
+        try {
+            const _id = req.params.id
+            let xoaTL = await Order.deleteOne({_id: _id})
+
+            if(xoaTL) {
+                return res.status(200).json({
+                    data: xoaTL,
+                    message: "Bạn đã xoá đơn hàng này thành công!"
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Bạn đã xoá đơn hàng này thất bại!"
+                })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }
+    },
 }
