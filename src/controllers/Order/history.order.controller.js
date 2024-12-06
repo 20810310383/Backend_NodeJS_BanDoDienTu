@@ -144,8 +144,10 @@ module.exports = {
                     const normalizedKeyword = keyword.toLowerCase();  // Chuyển tất cả về chữ thường để không phân biệt
                     return {
                         $or: [
-                            { firstName: { $regex: normalizedKeyword, $options: 'i' } },  // Tìm trong firstName
-                            { lastName: { $regex: normalizedKeyword, $options: 'i' } }     // Tìm trong lastName
+                            { firstName: { $regex: normalizedKeyword, $options: 'i' } },  
+                            { lastName: { $regex: normalizedKeyword, $options: 'i' } },     
+                            { phone: { $regex: normalizedKeyword, $options: 'i' } },     
+                            { address: { $regex: normalizedKeyword, $options: 'i' } },     
                         ]
                     };
                 }).flat();  // flat() để biến các mảng lồng vào thành một mảng phẳng
