@@ -117,5 +117,77 @@ module.exports = {
                 error: error.message,
             });
         }
-    }
+    },
+
+    historyOrderAll: async (req, res) => {
+        try {
+
+            const { page, limit, sort, order, tenKH } = req.query; 
+    
+            // Chuyển đổi thành số
+            const pageNumber = parseInt(page, 10);
+            const limitNumber = parseInt(limit, 10);
+    
+            // Tính toán số bản ghi bỏ qua
+            const skip = (pageNumber - 1) * limitNumber;
+
+            // tang/giam
+            let sortOrder = 1; // tang dn
+            if (order === 'desc') {
+                sortOrder = -1; 
+            }
+
+            // Tạo query tìm kiếm
+            const query = {};
+            if (tenKH) {
+                const searchKeywords = tenKH.trim().split(/\s+/).map(keyword => {
+                    const normalizedKeyword = keyword.toLowerCase();  // Chuyển tất cả về chữ thường để không phân biệt
+                    return {
+                        $or: [
+                            { firstName: { $regex: normalizedKeyword, $options: 'i' } },  // Tìm trong firstName
+                            { lastName: { $regex: normalizedKeyword, $options: 'i' } }     // Tìm trong lastName
+                        ]
+                    };
+                }).flat();  // flat() để biến các mảng lồng vào thành một mảng phẳng
+            
+                query.$and = searchKeywords;  // Dùng $and để tìm tất cả các từ khóa
+            }
+
+            let findOrder = await Order.find(query)
+                .skip(skip)
+                .limit(limitNumber)
+                .populate({
+                path: 'products._idSP', // Đường dẫn tới _idSP trong products
+                model: 'SanPham',       // Model liên kết
+                }) 
+                .sort({ [sort]: sortOrder })
+                
+            // Tính tổng 
+            let totalDH = await Order.countDocuments(query);
+            let totalPage = Math.ceil(totalDH / limitNumber)
+
+            if(findOrder){
+                return res.status(200).json({
+                    message: "Tìm Order thành công!",
+                    errCode: 0,
+                    data: {
+                        findOrder: findOrder,
+                        totalDH: totalDH,  // Tổng số Order
+                        totalPages: totalPage,  // Tổng số trang
+                        currentPage: pageNumber,  // Trang hiện tại
+                    }
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Tìm Order thất bại!",                
+                    errCode: -1,
+                })
+            } 
+        } catch (error) {
+            return res.status(500).json({
+                message: 'Đã xảy ra lỗi!',
+                error: error.message,
+            });
+        }
+    },
 }
