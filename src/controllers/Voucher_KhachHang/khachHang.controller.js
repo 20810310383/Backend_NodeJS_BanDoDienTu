@@ -20,14 +20,18 @@ module.exports = {
             // Tạo query tìm kiếm
             const query = {};
             if (fullName) {
-                const searchKeywords = (fullName || '')
-                const keywordsArray = searchKeywords.trim().split(/\s+/);
-    
-                const searchConditions = keywordsArray.map(keyword => ({
-                    fullName: { $regex: keyword, $options: 'i' } // Tìm kiếm không phân biệt chữ hoa chữ thường
-                }));
-    
-                query.$or = searchConditions;
+                const searchKeywords = fullName.trim().split(/\s+/).map(keyword => {
+                    const normalizedKeyword = keyword.toLowerCase();  // Chuyển tất cả về chữ thường để không phân biệt
+                    return {
+                        $or: [
+                            { fullName: { $regex: normalizedKeyword, $options: 'i' } },  
+                            { email: { $regex: normalizedKeyword, $options: 'i' } },                                 
+                            { address: { $regex: normalizedKeyword, $options: 'i' } },                                 
+                        ]
+                    };
+                }).flat();  // flat() để biến các mảng lồng vào thành một mảng phẳng
+            
+                query.$and = searchKeywords;  // Dùng $and để tìm tất cả các từ khóa
             }
     
             let accKH = await AccKH.find(query).populate("IdVoucher").skip(skip).limit(limitNumber)
