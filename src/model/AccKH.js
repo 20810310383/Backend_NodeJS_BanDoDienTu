@@ -9,8 +9,10 @@ const AccKH_Schema = new mongoose.Schema({
         gender: { type: Boolean, default: true},        
         image: { type: String },  
         tokenAccess: { type: String },                                                
-        isActive: { type: Boolean, default: true},        
         IdVoucher: [{ref: "Voucher", type: mongoose.SchemaTypes.ObjectId}],
+        otp: { type: Number },  // Thêm trường lưu mã OTP
+        otpExpires: { type: Date },  // Thêm trường lưu thời gian hết hạn mã OTP
+        isActive: { type: Boolean, default: false},        // Trạng thái tài khoản
     },
     { 
         timestamps: true,   // createAt, updateAt

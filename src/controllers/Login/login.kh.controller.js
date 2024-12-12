@@ -4,6 +4,17 @@ const AccKH = require('../../model/AccKH');
 require('dotenv').config();
 // Secret key cho JWT
 const JWT_SECRET = process.env.JWT_SECRET; 
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+
+// Tạo transporter để gửi email
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
 
 module.exports = {
 
@@ -16,6 +27,13 @@ module.exports = {
             if (!admin) {
                 return res.status(401).json({ message: 'Email không tồn tại' });
             }
+
+            if (!admin.isActive) {
+                return res.status(400).json({
+                    message: "Tài khoản chưa được xác thực. Vui lòng kiểm tra mã OTP."
+                });
+            }
+
             let messError = `Tài khoản này vi phạm quy định của trang và đang bị khóa! ` + '\n' + `Vui lòng liên hệ Admin!`
             if(admin.isActive === false) {
                 return res.status(401).json({ message: messError });
@@ -76,6 +94,69 @@ module.exports = {
     },
 
     registerAccKH: async (req, res) => {
+        const { email, password, fullName, address, phone, gender } = req.body;
+    
+        console.log("email, password, fullName, address, phone, gender: ", email, password, fullName, address, phone, gender);
+        
+        try {
+            // Kiểm tra xem email đã tồn tại trong cơ sở dữ liệu chưa
+            let check = await AccKH.findOne({ email: email });
+    
+            if (check) {
+                // Nếu tài khoản đã tồn tại, xóa OTP cũ (nếu có) trước khi tạo mã OTP mới
+                check.otp = null;  // Xóa OTP cũ
+                check.otpExpires = null;  // Xóa thời gian hết hạn OTP cũ
+                await check.save();
+                
+                console.log("Xóa mã OTP cũ, tạo mã OTP mới");
+            } else {
+                // Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
+                const hashedPassword = await bcrypt.hash(password, 10);
+    
+                // Tạo tài khoản mới
+                check = await AccKH.create({
+                    email, password: hashedPassword, fullName, address, phone, gender
+                });
+            }
+    
+            // Tạo mã OTP ngẫu nhiên
+            const otp = crypto.randomInt(100000, 999999);  // Mã OTP có 6 chữ số
+    
+            // Lưu OTP và thời gian hết hạn vào cơ sở dữ liệu của tài khoản
+            check.otp = otp;
+            check.otpExpires = Date.now() + 300000; // Mã OTP có hiệu lực trong 5 phút
+            await check.save();
+    
+            // Gửi OTP qua email
+            const mailOptions = {
+                from: 'Khắc Tú',  // Đổi thành tên người gửi nếu cần
+                to: email,  // Gửi tới email người dùng đăng ký
+                subject: 'Mã OTP Đăng ký tài khoản',
+                text: `Mã OTP của bạn là: ${otp}. Mã này có hiệu lực trong 5 phút.`,
+            };
+    
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error('Lỗi khi gửi email OTP: ', error);
+                    return res.status(500).json({
+                        success: false,
+                        message: "Lỗi khi gửi email OTP!"
+                    });
+                }
+                // Phản hồi khi gửi thành công
+                return res.status(200).json({
+                    success: true,
+                    message: "Mã OTP đã được gửi đến email của bạn. Vui lòng xác nhận OTP để xác nhận đăng ký tài khoản!"
+                });
+            });
+        } catch (error) {
+            console.error('Lỗi trong quá trình đăng ký tài khoản: ', error);
+            return res.status(500).json({ success: false, message: error.message });
+        }
+    },
+    
+
+    registerAccKH1: async (req, res) => {
 
         const {email, password, fullName, address, phone, gender} = req.body     
         
@@ -83,6 +164,20 @@ module.exports = {
         
        try {
             const check = await AccKH.findOne({email: email})
+
+            // if (check) {
+            //     // Kiểm tra xem tài khoản có bị xóa không
+            //     if (check.deleted) {
+            //         // Tài khoản đã bị xóa (xóa mềm), phục hồi tài khoản này
+            //         await AccKH.restore({ _id: check._id });
+            //         check = await AccKH.findOne({ email: email }); // Lấy lại thông tin tài khoản sau khi phục hồi
+            //     } else {
+            //         return res.status(400).json({
+            //             message: "Tồn tại tài khoản!"
+            //         });
+            //     }
+            // }
+
             if(check) {
                 return res.status(400).json({ 
                     success: false, 
@@ -104,6 +199,41 @@ module.exports = {
         } catch (error) {
             return res.status(500).json({ success: false , message: error });
         }
-    }
+    },
+
+    xacThucOTP: async (req, res) => {
+        const { otp, email } = req.body;
+    
+        console.log("otp, email: ", otp, email);
+        
+        try {
+            const user = await AccKH.findOne({ email: email });
+    
+            if (!user) {
+                return res.status(400).json({success: false, message: "Người dùng không tồn tại!" });
+            }
+    
+            // Kiểm tra mã OTP và thời gian hết hạn
+            if (user.otp !== otp) {
+                return res.status(400).json({success: false, message: "Mã OTP không đúng!" });
+            }
+    
+            if (Date.now() > user.otpExpires) {
+                return res.status(400).json({success: false, message: "Mã OTP đã hết hạn!" });
+            }
+    
+            // Nếu OTP hợp lệ, kích hoạt tài khoản
+            user.isActive = true;
+            user.otp = null;  // Xóa mã OTP sau khi xác thực
+            user.otpExpires = null;  // Xóa thời gian hết hạn OTP
+            await user.save();
+    
+            res.status(200).json({success: true, message: "Xác thực OTP thành công! Bạn có thể đăng nhập." });
+    
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Internal Server Error');
+        }
+    },
 
 }

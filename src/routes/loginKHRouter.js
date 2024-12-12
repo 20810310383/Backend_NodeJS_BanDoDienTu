@@ -14,6 +14,8 @@ router.post("/register-kh", loginKH.registerAccKH );
 // route logout  KH
 router.post("/logout-kh", loginKH.logoutKH );
 
+router.post("/xac-thuc-otp-kh", loginKH.xacThucOTP );
+
 // find all acc kh
 router.get("/get-kh", accKH.getAccKH );
 
