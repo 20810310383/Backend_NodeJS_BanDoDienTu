@@ -103,12 +103,20 @@ module.exports = {
             let check = await AccKH.findOne({ email: email });
     
             if (check) {
-                // Nếu tài khoản đã tồn tại, xóa OTP cũ (nếu có) trước khi tạo mã OTP mới
-                check.otp = null;  // Xóa OTP cũ
-                check.otpExpires = null;  // Xóa thời gian hết hạn OTP cũ
-                await check.save();
-                
-                console.log("Xóa mã OTP cũ, tạo mã OTP mới");
+
+                if (check.isActive) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Tài khoản đã tồn tại và đã được kích hoạt. Bạn không thể đăng ký lại!'
+                    });
+                } else {
+                    // Nếu tài khoản tồn tại nhưng chưa kích hoạt, xóa OTP cũ (nếu có) trước khi tạo mã OTP mới
+                    check.otp = null;  // Xóa OTP cũ
+                    check.otpExpires = null;  // Xóa thời gian hết hạn OTP cũ
+                    await check.save();
+    
+                    console.log("Xóa mã OTP cũ, tạo mã OTP mới");
+                }
             } else {
                 // Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
                 const hashedPassword = await bcrypt.hash(password, 10);
