@@ -1,7 +1,8 @@
 const Order = require('../../model/Order');
 const Product = require('../../model/SanPham');  // Import model sản phẩm
 require('dotenv').config();
-
+const nodemailer = require('nodemailer');
+const urlBackend = process.env.VITE_BACKEND_URL
 module.exports = {
 
     historyOrderByIdKH: async (req, res) => {
@@ -217,4 +218,152 @@ module.exports = {
             });
         }
     },
+
+    updateOrder: async (req, res) => {
+        try {
+            let {TinhTrangDonHang, TinhTrangThanhToan, _id} = req.body
+
+            let update = await Order.findByIdAndUpdate({_id: _id}, {TinhTrangDonHang, TinhTrangThanhToan})
+
+            // Hàm định dạng tiền tệ VND
+            const formatCurrency = (amount) => {
+                return new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                }).format(amount);
+            }
+
+            //---- GỬI XÁC NHẬN ĐƠN HÀNG VỀ EMAIL
+            const transporter = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+
+            let productsHtml = '';
+
+            let findOrder = await Order.findById({_id: _id})
+                .populate({
+                    path: 'products._idSP', // Đường dẫn tới _idSP trong products
+                    model: 'SanPham',       // Model liên kết
+                })
+                .populate('idKhachHang')
+
+            for (const product of findOrder.products) {
+                // Tìm sản phẩm trong cơ sở dữ liệu bằng _idSP
+                const productDetails = await Product.findById(product._idSP).exec();
+    
+                // Kiểm tra nếu tìm thấy sản phẩm
+                if (productDetails) {
+                    // Thêm thông tin sản phẩm vào bảng HTML
+                    productsHtml += `
+                        <tr>
+                            <td>${productDetails.TenSP}</td>  
+                            <td>${product.size}</td>  
+                            <td>${product.quantity}</td>  
+                            <td>${formatCurrency(product.price)}</td>  <!-- Giá mỗi sản phẩm -->
+                            <td>${formatCurrency(product.quantity * product.price)}</td>  <!-- Tổng tiền cho sản phẩm -->
+                        </tr>
+                    `;
+                }
+            }
+
+            const orderStatusColor = {
+                "Chưa giao hàng": "#95a5a6",   // Màu xám
+                "Đang giao hàng": "#f39c12",    // Màu vàng
+                "Đã giao hàng": "#2ecc71",     // Màu xanh
+            };
+            
+            const paymentStatusColor = {
+                "Chưa Thanh Toán": "#95a5a6",  // Màu xám
+                "Đã Thanh Toán": "#2ecc71",    // Màu xanh
+            };
+            
+            // Sử dụng màu sắc cho trạng thái đơn hàng và thanh toán
+            const orderStatusStyle = orderStatusColor[findOrder.TinhTrangDonHang] || "#95a5a6";  // Mặc định là màu xám nếu không tìm thấy
+            const paymentStatusStyle = paymentStatusColor[findOrder.TinhTrangThanhToan] || "#95a5a6";
+
+            const sendOrderConfirmationEmail = async (toEmail) => {
+                // Tạo nội dung email với bảng sản phẩm
+                const mailOptions = {
+                    from: 'Khắc Tú',
+                    to: toEmail,
+                    subject: 'Thông báo về trạng thái đơn hàng của bạn.',
+                    html: `
+                        <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <h2 style="text-align: center; color: #2c3e50; font-size: 24px;">Cảm ơn bạn đã đặt hàng!</h2>
+                            <p style="color: #34495e; font-size: 18px;">Chào bạn <span style="color: #e74c3c; font-weight: bold; font-style: italic;">${findOrder.lastName} ${findOrder.firstName}</span>,</p>
+                            <p style="font-size: 16px;">Đơn hàng của bạn đã được xác nhận.</p>
+                            
+                            <div style="background-color: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                                <p><strong>Tổng số lượng đặt:</strong> <span style="color: #2980b9;">${findOrder.tongSoLuong}</span> sản phẩm</p>
+                                <p><strong>Tổng tiền:</strong> <span style="color: #e74c3c;">${formatCurrency(findOrder.thanhTien)}</span></p>
+                                <p><strong>Phí giao hàng:</strong> <span style="color: #2ecc71;">0</span></p>
+                                <p><strong>Giảm giá:</strong> <span style="color: #e67e22;">-${formatCurrency(findOrder.soTienGiamGia)}</span> (${findOrder.giamGia}%)</p>
+                                <p><strong>Số tiền cần thanh toán:</strong> <span style="color: #e74c3c;">${formatCurrency(findOrder.soTienCanThanhToan)}</span></p>
+                            </div>
+                
+                            <p><strong>Số điện thoại:</strong> ${findOrder.phone}</p>
+                            <p><strong>Địa chỉ nhận hàng:</strong> <span style="color: #34495e; font-style: italic;">${findOrder.address}</span></p>
+                            <br/>
+                                                        
+                            <p><strong>Trạng thái đơn hàng:</strong> <span style="color: ${orderStatusStyle}; font-style: italic; font-weight: bold;">${findOrder.TinhTrangDonHang}</span></p>
+                            <p><strong>Trạng thái thanh toán:</strong> <span style="color: ${paymentStatusStyle}; font-style: italic; font-weight: bold;">${findOrder.TinhTrangThanhToan}</span></p>
+                
+                            <h3 style="color: #2c3e50; font-size: 20px; text-align: center;">Thông tin sản phẩm đã đặt hàng</h3>
+                
+                            <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-bottom: 20px; background-color: #ffffff;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; padding: 8px; background-color: #ecf0f1; color: #2c3e50;">Tên sản phẩm</th>
+                                        <th style="text-align: left; padding: 8px; background-color: #ecf0f1; color: #2c3e50;">Cấu hình</th>
+                                        <th style="text-align: left; padding: 8px; background-color: #ecf0f1; color: #2c3e50;">Số lượng</th>
+                                        <th style="text-align: left; padding: 8px; background-color: #ecf0f1; color: #2c3e50;">Đơn giá</th>
+                                        <th style="text-align: left; padding: 8px; background-color: #ecf0f1; color: #2c3e50;">Tổng tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${productsHtml}
+                                </tbody>
+                            </table>
+                
+                            <p style="text-align: center; font-size: 16px;">Bạn có thể theo dõi đơn hàng tại <a href="#" style="color: #3498db; text-decoration: none;">WebShop Khắc Tú</a></p>
+                        </div>
+                    `
+                };
+                
+    
+                return new Promise((resolve, reject) => {
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                            resolve();
+                        }
+                    });
+                });
+            };
+            
+            if(update) {
+                await sendOrderConfirmationEmail(findOrder.email);
+                return res.status(200).json({
+                    data: update,
+                    findOrder,
+                    message: "Cập nhật đơn hàng thành công!"
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Cập nhật đơn hàng thất bại!"
+                })
+            }
+        } catch (error) {
+            return res.status(500).json({
+                message: 'Đã xảy ra lỗi!',
+                error: error.message,
+            });
+        }
+    }
 }

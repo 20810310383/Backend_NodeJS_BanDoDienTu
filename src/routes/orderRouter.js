@@ -14,4 +14,6 @@ router.post("/huy-order", orderHistory.handleHuyOrder );
 
 router.delete("/delete-history-order/:id", orderHistory.deleteHistoryOrder );
 
+router.put("/update-order", orderHistory.updateOrder );
+
 module.exports = router;
