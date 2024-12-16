@@ -16,6 +16,7 @@ const multer = require('multer');
 const path = require('path');
 const cron = require('node-cron');
 const moment = require('moment');
+const WebSocket = require('ws'); // Thêm thư viện WebSocket
 
 require("dotenv").config();
 
@@ -84,12 +85,44 @@ routes.forEach(route => app.use(route.path, route.router));
 // Sử dụng uploadRouter
 app.use("/api/upload", uploadRouter); // Đặt đường dẫn cho upload
 
-app.get('/dokhactu', (req, res) => {
-    setTimeout(function() {
-        throw new Error('loi')
-    })
-})
+// WebSocket setup
+const wss = new WebSocket.Server({ noServer: true }); // Khởi tạo WebSocket server
 
-app.listen(port, () => {
-    console.log("backend nodejs is running on the port:", port, `\n http://localhost:${port}`);
+let onlineUsers = 0;  // Biến lưu số người dùng online
+
+// Lắng nghe kết nối WebSocket
+wss.on('connection', (ws) => {
+    onlineUsers++;  // Tăng số người dùng online
+    console.log(`Người dùng kết nối. Tổng số người online: ${onlineUsers}`);
+
+    // Gửi số lượng người online đến client
+    ws.send(JSON.stringify({ onlineUsers }));
+
+    // Khi kết nối bị ngắt
+    ws.on('close', () => {
+        onlineUsers--;  // Giảm số người dùng online
+        console.log(`Người dùng ngắt kết nối. Tổng số người online: ${onlineUsers}`);
+    });
 });
+
+// Kết nối WebSocket với HTTP server
+app.server = app.listen(port, () => {
+    console.log("Backend Node.js is running on the port:", port, `\n http://localhost:${port}`);
+});
+
+// Tạo kết nối WebSocket với server HTTP
+app.server.on('upgrade', (request, socket, head) => {
+    wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+    });
+});
+
+// app.get('/dokhactu', (req, res) => {
+//     setTimeout(function() {
+//         throw new Error('loi')
+//     })
+// })
+
+// app.listen(port, () => {
+//     console.log("backend nodejs is running on the port:", port, `\n http://localhost:${port}`);
+// });
