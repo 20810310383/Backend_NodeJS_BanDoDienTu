@@ -297,23 +297,7 @@ module.exports = {
                             <p style="color: #34495e; font-size: 18px;">Chào bạn <span style="color: #e74c3c; font-weight: bold; font-style: italic;">${findOrder.lastName} ${findOrder.firstName}</span>,</p>
                             <p style="font-size: 16px;">Đơn hàng của bạn đã được xác nhận.</p>
                             
-                            <div style="background-color: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                                <p><strong>Tổng số lượng đặt:</strong> <span style="color: #2980b9;">${findOrder.tongSoLuong}</span> sản phẩm</p>
-                                <p><strong>Tổng tiền:</strong> <span style="color: #e74c3c;">${formatCurrency(findOrder.thanhTien)}</span></p>
-                                <p><strong>Phí giao hàng:</strong> <span style="color: #2ecc71;">0</span></p>
-                                <p><strong>Giảm giá:</strong> <span style="color: #e67e22;">-${formatCurrency(findOrder.soTienGiamGia)}</span> (${findOrder.giamGia}%)</p>
-                                <p><strong>Số tiền cần thanh toán:</strong> <span style="color: #e74c3c;">${formatCurrency(findOrder.soTienCanThanhToan)}</span></p>
-                            </div>
-                
-                            <p><strong>Số điện thoại:</strong> ${findOrder.phone}</p>
-                            <p><strong>Địa chỉ nhận hàng:</strong> <span style="color: #34495e; font-style: italic;">${findOrder.address}</span></p>
-                            <br/>
-                                                        
-                            <p><strong>Trạng thái đơn hàng:</strong> <span style="color: ${orderStatusStyle}; font-style: italic; font-weight: bold;">${findOrder.TinhTrangDonHang}</span></p>
-                            <p><strong>Trạng thái thanh toán:</strong> <span style="color: ${paymentStatusStyle}; font-style: italic; font-weight: bold;">${findOrder.TinhTrangThanhToan}</span></p>
-                
-                            <h3 style="color: #2c3e50; font-size: 20px; text-align: center;">Thông tin sản phẩm đã đặt hàng</h3>
-                
+                            <h3 style="color: #2c3e50; font-size: 20px; text-align: center;">Thông tin sản phẩm đã đặt hàng</h3>                                        
                             <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-bottom: 20px; background-color: #ffffff;">
                                 <thead>
                                     <tr>
@@ -328,8 +312,23 @@ module.exports = {
                                     ${productsHtml}
                                 </tbody>
                             </table>
+
+                            <div style="background-color: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                                <p><strong>Tổng số lượng đặt:</strong> <span style="color: #2980b9;">${findOrder.tongSoLuong}</span> sản phẩm</p>
+                                <p><strong>Tổng tiền:</strong> <span style="color: #e74c3c;">${formatCurrency(findOrder.thanhTien)}</span></p>
+                                <p><strong>Phí giao hàng:</strong> <span style="color: #2ecc71;">0</span></p>
+                                <p><strong>Giảm giá:</strong> <span style="color: #e67e22;">-${formatCurrency(findOrder.soTienGiamGia)}</span> (${findOrder.giamGia}%)</p>
+                                <p><strong>Số tiền cần thanh toán:</strong> <span style="color: #e74c3c;">${formatCurrency(findOrder.soTienCanThanhToan)}</span></p>
+                            </div>
                 
-                            <p style="text-align: center; font-size: 16px;">Bạn có thể theo dõi đơn hàng tại <a href="#" style="color: #3498db; text-decoration: none;">WebShop Khắc Tú</a></p>
+                            <p><strong>Số điện thoại:</strong> ${findOrder.phone}</p>
+                            <p><strong>Địa chỉ nhận hàng:</strong> <span style="color: #34495e; font-style: italic;">${findOrder.address}</span></p>
+                            <br/>
+                                                        
+                            <p><strong>Trạng thái đơn hàng:</strong> <span style="color: ${orderStatusStyle}; font-style: italic; font-weight: bold;">${findOrder.TinhTrangDonHang}</span></p>
+                            <p><strong>Trạng thái thanh toán:</strong> <span style="color: ${paymentStatusStyle}; font-style: italic; font-weight: bold;">${findOrder.TinhTrangThanhToan}</span></p>
+                                
+                            <p style="text-align: center; font-size: 16px;">Bạn có thể theo dõi đơn hàng tại <a href="https://shopbandodientu.dokhactu.site" style="color: #3498db; text-decoration: none;">WebShop Khắc Tú</a></p>
                         </div>
                     `
                 };
