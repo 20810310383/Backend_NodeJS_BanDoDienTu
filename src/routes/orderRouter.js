@@ -16,4 +16,6 @@ router.delete("/delete-history-order/:id", orderHistory.deleteHistoryOrder );
 
 router.put("/update-order", orderHistory.updateOrder );
 
+router.get("/sales-by-month", orderHistory.doanhThu );
+
 module.exports = router;

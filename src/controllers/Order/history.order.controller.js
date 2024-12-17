@@ -364,5 +364,40 @@ module.exports = {
                 error: error.message,
             });
         }
+    },
+
+    doanhThu: async (req, res) => {
+        try {
+            const orders = await Order.aggregate([
+                {
+                    $match: {
+                        // Lọc các đơn hàng theo điều kiện
+                        TinhTrangDonHang: "Đã giao hàng",
+                        TinhTrangThanhToan: "Đã Thanh Toán",
+                        TrangThaiHuyDon: "Không Hủy"
+                    }
+                },
+                {
+                    $project: {
+                        year: { $year: "$createdAt" },  // Lấy năm từ createdAt
+                        month: { $month: "$createdAt" }, // Lấy tháng từ createdAt
+                        day: { $dayOfMonth: "$createdAt" }, // Lấy ngày từ createdAt
+                        totalSales: "$soTienCanThanhToan" // Tổng doanh thu
+                    }
+                },
+                {
+                    $group: {
+                        _id: { year: "$year", month: "$month", day: "$day" }, // Nhóm theo năm, tháng, ngày
+                        totalSales: { $sum: "$totalSales" } // Tổng doanh thu
+                    }
+                },
+                { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 } } // Sắp xếp theo năm, tháng, ngày
+            ]);
+    
+            res.json({ data: orders }); // Trả về dữ liệu doanh thu theo ngày
+        } catch (error) {
+            res.status(500).send("Error fetching sales data");
+        }
     }
+    
 }
