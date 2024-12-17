@@ -382,13 +382,15 @@ module.exports = {
                         year: { $year: "$createdAt" },  // Lấy năm từ createdAt
                         month: { $month: "$createdAt" }, // Lấy tháng từ createdAt
                         day: { $dayOfMonth: "$createdAt" }, // Lấy ngày từ createdAt
-                        totalSales: "$soTienCanThanhToan" // Tổng doanh thu
+                        totalSales: "$soTienCanThanhToan", // Tổng doanh thu
+                        status: 1  // Giữ lại trạng thái đơn hàng để tính tổng đơn hàng thành công
                     }
                 },
                 {
                     $group: {
                         _id: { year: "$year", month: "$month", day: "$day" }, // Nhóm theo năm, tháng, ngày
-                        totalSales: { $sum: "$totalSales" } // Tổng doanh thu
+                        totalSales: { $sum: "$totalSales" }, // Tổng doanh thu
+                        totalOrders: { $sum: 1 }  // Tổng số đơn hàng thành công (1 đơn hàng = 1)
                     }
                 },
                 { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 } } // Sắp xếp theo năm, tháng, ngày
