@@ -18,4 +18,6 @@ router.put("/khoa-admin", nhanVien.khoaAccAdmin );
 
 router.delete("/delete-admin/:id", nhanVien.deleteAccAdmin );
 
+router.get("/get-role", nhanVien.getRole );
+
 module.exports = router;

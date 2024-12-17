@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');  // Đảm bảo bạn đã import mongoose
 const AccAdmin = require('../../model/AccAdmin');
+const Role = require('../../model/Role');
 require('dotenv').config();
 
 module.exports = {
@@ -62,39 +63,14 @@ module.exports = {
             });
         }        
     },    
-
-    deleteAccAdmin: async (req, res) => {
-        try {
-            const id = req.params.id
-            let xoa = await AccAdmin.deleteOne({_id: id})
-
-            if(xoa) {
-                return res.status(200).json({
-                    data: xoa,
-                    message: "Bạn đã xóa tài khoản nhân viên thành công!"
-                })
-            } else {
-                return res.status(500).json({
-                    message: "Bạn đã xóa tài khoản nhân viên thất bại!"
-                })
-            }
-
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({
-                message: "Có lỗi xảy ra.",
-                error: error.message,
-            });
-        }
-    },
   
     updateAccAdmin: async (req, res) => {
         try {
-            const { id, roleId } = req.body;                               
+            const { id, roleId, lastName, firstName } = req.body;                               
                 
             const updateResult = await AccAdmin.updateOne(
                 { _id: id }, // Điều kiện tìm kiếm tài liệu cần cập nhật
-                { roleId }
+                { roleId, lastName, firstName }
             );
 
             if(updateResult) {
@@ -163,4 +139,33 @@ module.exports = {
             });
         }
     },
+
+    getRole: async (req, res) => {
+        try {           
+            const query = {};
+            
+            let acc = await Role.find(query)           
+                       
+            if(acc) {
+                return res.status(200).json({
+                    message: "Đã tìm ra role",
+                    errCode: 0,
+                    data: acc,                    
+                })
+            } else {
+                return res.status(500).json({
+                    message: "Tìm thất bại!",
+                    errCode: -1,
+                })
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Có lỗi xảy ra.",
+                error: error.message,
+            });
+        }        
+    },    
+
 }
