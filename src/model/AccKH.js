@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const defaultVoucherId = new mongoose.Types.ObjectId("673f97124d3518d5ed8a1489");   // mặc định giảm 2%
+
 const AccKH_Schema = new mongoose.Schema({   
         email: { type: String,  required: true },
         password: { type: String, required: true },
@@ -9,7 +11,7 @@ const AccKH_Schema = new mongoose.Schema({
         gender: { type: Boolean, default: true},        
         image: { type: String },  
         tokenAccess: { type: String },                                                
-        IdVoucher: [{ref: "Voucher", type: mongoose.SchemaTypes.ObjectId}],
+        IdVoucher: [{ref: "Voucher", type: mongoose.SchemaTypes.ObjectId, default: [defaultVoucherId]}],
         otp: { type: Number },  // Thêm trường lưu mã OTP
         otpExpires: { type: Date },  // Thêm trường lưu thời gian hết hạn mã OTP
         isActive: { type: Boolean, default: false},        // Trạng thái tài khoản

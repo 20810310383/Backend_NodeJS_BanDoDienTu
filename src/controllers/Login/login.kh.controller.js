@@ -6,6 +6,7 @@ require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET; 
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const mongoose = require('mongoose');
 
 // Tạo transporter để gửi email
 const transporter = nodemailer.createTransport({
@@ -15,6 +16,8 @@ const transporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PASS
     }
 });
+
+const defaultVoucherId = new mongoose.Types.ObjectId("673f97124d3518d5ed8a1489");   // mặc định giảm 2%
 
 module.exports = {
 
@@ -123,7 +126,7 @@ module.exports = {
     
                 // Tạo tài khoản mới
                 check = await AccKH.create({
-                    email, password: hashedPassword, fullName, address, phone, gender
+                    email, password: hashedPassword, fullName, address, phone, gender, IdVoucher: defaultVoucherId
                 });
             }
     
