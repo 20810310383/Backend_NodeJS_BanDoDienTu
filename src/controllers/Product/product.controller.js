@@ -146,7 +146,7 @@ module.exports = {
 
     createProduct: async (req, res) => {
         try {
-            let {TenSP, GiamGiaSP, MoTa, MoTaChiTiet, ImageSlider, Image, IdHangSX, IdLoaiSP, sizes} = req.body     
+            let {TenSP, GiamGiaSP, MoTa, MoTaChiTiet, ImageSlider, Image, IdHangSX, IdLoaiSP, sizes, urlYoutube} = req.body     
             
             console.log("TenSP: ", TenSP);
             console.log("GiamGiaSP: ", GiamGiaSP);
@@ -159,7 +159,7 @@ module.exports = {
             console.log("sizes: ", sizes);
             
 
-            let createSP = await SanPham.create({TenSP, GiamGiaSP, MoTa, MoTaChiTiet, ImageSlider, Image, IdHangSX, IdLoaiSP, sizes})
+            let createSP = await SanPham.create({TenSP, GiamGiaSP, MoTa, MoTaChiTiet, ImageSlider, Image, IdHangSX, IdLoaiSP, sizes, urlYoutube})
 
             if(createSP){
                 return res.status(200).json({
@@ -185,9 +185,9 @@ module.exports = {
 
     updateProduct: async (req, res) => {
         try {
-            let {_id, TenSP, IdHangSX, IdLoaiSP, sizes, Image, ImageSlider, MoTa, MoTaChiTiet, GiamGiaSP} = req.body
+            let {_id, TenSP, IdHangSX, IdLoaiSP, sizes, Image, ImageSlider, MoTa, MoTaChiTiet, GiamGiaSP, urlYoutube} = req.body
 
-            let updateTL = await SanPham.updateOne({_id: _id},{TenSP, IdHangSX, IdLoaiSP, sizes, Image, ImageSlider, MoTa, MoTaChiTiet, GiamGiaSP})
+            let updateTL = await SanPham.updateOne({_id: _id},{TenSP, IdHangSX, IdLoaiSP, sizes, Image, ImageSlider, MoTa, MoTaChiTiet, GiamGiaSP, urlYoutube})
 
             if(updateTL) {
                 return res.status(200).json({

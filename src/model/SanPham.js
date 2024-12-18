@@ -15,6 +15,7 @@ const SanPham_Schema = new mongoose.Schema(
         GiaBan: { type: Number, required: false },
         GiamGiaSP: { type: Number, default: "0" },
         SoNgayKM: { type: String },
+        urlYoutube: { type: String },
         GiamGiaTheoNgay: { type: Number, default: "0" },
         MoTa: { type: String, default: "Not thing" },
         MoTaChiTiet: { type: String, default: "Not thing" },

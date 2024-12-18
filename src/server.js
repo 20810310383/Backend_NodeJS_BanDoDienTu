@@ -28,7 +28,7 @@ connectDB();
 
 // Cài đặt CORS
 const allowedOrigins = [
-    'http://localhost:3006', // Local development
+    'http://localhost:3006', // Local development - admin
     'http://localhost:3008', // Local development
     'https://bandodientu-admin.vercel.app',
     'https://bandodientu-kt-trangchu.vercel.app',
@@ -60,7 +60,6 @@ app.use('/uploads', express.static(path.join(__dirname, './public/uploads')));
 
 // Config app
 viewEngine(app);
-
 
 const routes = [
     { path: '/api/accadmin', router: adminRouter },
