@@ -388,12 +388,12 @@ module.exports = {
                 },
                 {
                     $group: {
-                        _id: { year: "$year", month: "$month", day: "$day" }, // Nhóm theo năm, tháng, ngày
+                        _id: { year: "$year", month: "$month" }, // Nhóm theo năm, tháng, ngày
                         totalSales: { $sum: "$totalSales" }, // Tổng doanh thu
                         totalOrders: { $sum: 1 }  // Tổng số đơn hàng thành công (1 đơn hàng = 1)
                     }
                 },
-                { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 } } // Sắp xếp theo năm, tháng, ngày
+                { $sort: { "_id.year": 1, "_id.month": 1 } } // Sắp xếp theo năm, tháng, ngày
             ]);
     
             res.json({ data: orders }); // Trả về dữ liệu doanh thu theo ngày

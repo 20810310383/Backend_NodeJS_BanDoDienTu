@@ -33,7 +33,7 @@ module.exports = {
 
             if (!admin.isActive) {
                 return res.status(400).json({
-                    message: "Tài khoản chưa được xác thực. Vui lòng kiểm tra mã OTP."
+                    message: "Tài khoản vi phạm bị khóa hoặc Tài khoản chưa được xác thực. Vui lòng kiểm tra mã OTP."
                 });
             }
 
@@ -55,7 +55,7 @@ module.exports = {
             const isMatch = await bcrypt.compare(password, admin.password);
             if (!isMatch) {
                 return res.status(401).json({ message: 'Mật khẩu không chính xác' });
-            }
+            }            
 
             // Tạo token JWT
             const token = jwt.sign(
@@ -247,4 +247,26 @@ module.exports = {
         }
     },
 
+    checkTrangThaiIsActive: async (req, res) => {
+        const token = req.headers['authorization']?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Không có token xác thực' });
+        }
+
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            const admin = await AccKH.findById(decoded.adminId);
+            if (!admin) {
+                return res.status(404).json({ message: 'Tài khoản không tồn tại' });
+            }
+
+            if (!admin.isActive) {
+                return res.status(400).json({ message: 'Tài khoản đã bị khóa' });
+            }
+
+            res.status(200).json({ message: 'Tài khoản vẫn hoạt động' });
+        } catch (error) {
+            res.status(500).json({ message: 'Lỗi server' });
+        }
+    }
 }

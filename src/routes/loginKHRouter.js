@@ -16,6 +16,8 @@ router.post("/logout-kh", loginKH.logoutKH );
 
 router.post("/xac-thuc-otp-kh", loginKH.xacThucOTP );
 
+router.get("/check-status", loginKH.checkTrangThaiIsActive );
+
 // find all acc kh
 router.get("/get-kh", accKH.getAccKH );
 
