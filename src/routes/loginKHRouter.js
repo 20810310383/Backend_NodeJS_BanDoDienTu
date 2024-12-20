@@ -1,9 +1,14 @@
 const express = require("express");
-import { verifyGoogleToken } from '../controllers/Login/login.google.controller';
-import { checkTrangThaiIsActive, loginAccKH, logoutKH, registerAccKH, xacThucOTP } from '../controllers/Login/login.kh.controller';
-import {doiThongTinKH} from '../controllers/Login/doi.thong.tin.kh.controller';
-import { quenMatKhauKH } from '../controllers/Login/quen.mat.khau.controller';
-import  { deleteAccKH, getAccKH, getOneAccKH, khoaAccKH, updateAccKH } from '../controllers/Voucher_KhachHang/khachHang.controller';
+// import { verifyGoogleToken } from '../controllers/Login/login.google.controller';
+// import { checkTrangThaiIsActive, loginAccKH, logoutKH, registerAccKH, xacThucOTP } from '../controllers/Login/login.kh.controller';
+// import {doiThongTinKH} from '../controllers/Login/doi.thong.tin.kh.controller';
+// import { quenMatKhauKH } from '../controllers/Login/quen.mat.khau.controller';
+// import  { deleteAccKH, getAccKH, getOneAccKH, khoaAccKH, updateAccKH } from '../controllers/Voucher_KhachHang/khachHang.controller';
+const { verifyGoogleToken } = require('../controllers/Login/login.google.controller');
+const { checkTrangThaiIsActive, loginAccKH, logoutKH, registerAccKH, xacThucOTP } = require('../controllers/Login/login.kh.controller');
+const { doiThongTinKH } = require('../controllers/Login/doi.thong.tin.kh.controller');
+const { quenMatKhauKH } = require('../controllers/Login/quen.mat.khau.controller');
+const { deleteAccKH, getAccKH, getOneAccKH, khoaAccKH, updateAccKH } = require('../controllers/Voucher_KhachHang/khachHang.controller');
 
 const router = express.Router();
 

@@ -1,5 +1,7 @@
 const express = require("express");
-import { createHangSX, deleteHangSX, getHangSX, updateHangSX } from '../controllers/HangSX/hangSX.controller';
+// import { createHangSX, deleteHangSX, getHangSX, updateHangSX } from '../controllers/HangSX/hangSX.controller';
+const { createHangSX, deleteHangSX, getHangSX, updateHangSX } = require('../controllers/HangSX/hangSX.controller');
+
 const router = express.Router();
 
 // find all hang sx

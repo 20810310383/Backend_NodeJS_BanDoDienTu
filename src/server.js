@@ -112,17 +112,18 @@ wss.on('connection', (ws) => {
     });
 });
 
-// Kết nối WebSocket với HTTP server
-app.server = app.listen(port, () => {
-    console.log("Backend Node.js is running on the port:", port, `\n http://localhost:${port}`);
-});
-
 // Tạo kết nối WebSocket với server HTTP
 app.server.on('upgrade', (request, socket, head) => {
     wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit('connection', ws, request);
     });
 });
+
+// Kết nối WebSocket với HTTP server
+app.server = app.listen(port, () => {
+    console.log("Backend Node.js is running on the port:", port, `\n http://localhost:${port}`);
+});
+
 
 // app.get('/dokhactu', (req, res) => {
 //     setTimeout(function() {

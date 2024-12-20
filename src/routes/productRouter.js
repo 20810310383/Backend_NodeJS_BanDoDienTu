@@ -1,6 +1,9 @@
 const express = require("express");
-import { createProduct, deleteProduct, getDetailSP, getProducts, getProductToCategoryNoiBat, getProductToCategorySPLienQuan, importProductsFromExcel, updateProduct } from '../controllers/Product/product.controller';
-import { uploadExcel, uploadExcelFile } from '../controllers/Upload/upload.controller';
+// import { createProduct, deleteProduct, getDetailSP, getProducts, getProductToCategoryNoiBat, getProductToCategorySPLienQuan, importProductsFromExcel, updateProduct } from '../controllers/Product/product.controller';
+// import { uploadExcel, uploadExcelFile } from '../controllers/Upload/upload.controller';
+const { createProduct, deleteProduct, getDetailSP, getProducts, getProductToCategoryNoiBat, getProductToCategorySPLienQuan, importProductsFromExcel, updateProduct } = require('../controllers/Product/product.controller');
+const { uploadExcel, uploadExcelFile } = require('../controllers/Upload/upload.controller');
+
 const router = express.Router();
 
 // find all product

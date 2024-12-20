@@ -1,5 +1,7 @@
 const express = require("express");
-import { createTheLoai, deleteTheLoai, findOneCategory, getTheLoai, updateTheLoai } from '../controllers/TheLoai/theLoai.controller';
+// import { createTheLoai, deleteTheLoai, findOneCategory, getTheLoai, updateTheLoai } from '../controllers/TheLoai/theLoai.controller';
+const { createTheLoai, deleteTheLoai, findOneCategory, getTheLoai, updateTheLoai } = require('../controllers/TheLoai/theLoai.controller');
+
 const router = express.Router();
 
 // find all the loai

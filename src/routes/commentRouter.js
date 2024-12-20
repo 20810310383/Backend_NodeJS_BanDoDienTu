@@ -1,5 +1,6 @@
 const express = require("express");
-import { createComment, deleteComment, getComment } from '../controllers/Comments/comment.controller';
+// import { createComment, deleteComment, getComment } from '../controllers/Comments/comment.controller';
+const { createComment, deleteComment, getComment } = require('../controllers/Comments/comment.controller');
 const router = express.Router();
 
 // find all comment

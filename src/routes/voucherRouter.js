@@ -1,5 +1,7 @@
 const express = require("express");
-import { createVoucher, deleteVoucher, getVoucher, updateVoucher } from '../controllers/Voucher_KhachHang/voucher.controller';
+// import { createVoucher, deleteVoucher, getVoucher, updateVoucher } from '../controllers/Voucher_KhachHang/voucher.controller';
+const { createVoucher, deleteVoucher, getVoucher, updateVoucher } = require('../controllers/Voucher_KhachHang/voucher.controller');
+
 const router = express.Router();
 
 // find all voucher

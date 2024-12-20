@@ -1,6 +1,9 @@
 const express = require("express");
-import  { loginAccAdmin, logoutAdmin, registerAccAdmin } from '../controllers/Login/login.admin.controller';
-import { deleteAccAdmin, getAccAdmin, getRole, khoaAccAdmin, updateAccAdmin } from '../controllers/NhanVien/nhanVien.controller';
+// import  { loginAccAdmin, logoutAdmin, registerAccAdmin } from '../controllers/Login/login.admin.controller';
+// import { deleteAccAdmin, getAccAdmin, getRole, khoaAccAdmin, updateAccAdmin } from '../controllers/NhanVien/nhanVien.controller';
+const { loginAccAdmin, logoutAdmin, registerAccAdmin } = require('../controllers/Login/login.admin.controller');
+const { deleteAccAdmin, getAccAdmin, getRole, khoaAccAdmin, updateAccAdmin } = require('../controllers/NhanVien/nhanVien.controller');
+
 const router = express.Router();
 
 // route đăng nhập admin
