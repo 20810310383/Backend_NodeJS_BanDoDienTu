@@ -1,6 +1,6 @@
 const express = require("express");
-import order, { createOrder } from '../controllers/Order/order.controller';
-import orderHistory, { deleteHistoryOrder, doanhThu, handleHuyOrder, historyOrderAll, historyOrderByIdKH, updateOrder } from '../controllers/Order/history.order.controller';
+import { createOrder } from '../controllers/Order/order.controller';
+import { deleteHistoryOrder, doanhThu, handleHuyOrder, historyOrderAll, historyOrderByIdKH, updateOrder } from '../controllers/Order/history.order.controller';
 const router = express.Router();
 
 // find all hang sx

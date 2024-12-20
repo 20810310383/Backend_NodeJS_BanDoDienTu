@@ -1,9 +1,9 @@
 const express = require("express");
 import { verifyGoogleToken } from '../controllers/Login/login.google.controller';
-import loginKH, { checkTrangThaiIsActive, loginAccKH, logoutKH, registerAccKH, xacThucOTP } from '../controllers/Login/login.kh.controller';
+import { checkTrangThaiIsActive, loginAccKH, logoutKH, registerAccKH, xacThucOTP } from '../controllers/Login/login.kh.controller';
 import {doiThongTinKH} from '../controllers/Login/doi.thong.tin.kh.controller';
 import { quenMatKhauKH } from '../controllers/Login/quen.mat.khau.controller';
-import accKH, { deleteAccKH, getAccKH, getOneAccKH, khoaAccKH, updateAccKH } from '../controllers/Voucher_KhachHang/khachHang.controller';
+import  { deleteAccKH, getAccKH, getOneAccKH, khoaAccKH, updateAccKH } from '../controllers/Voucher_KhachHang/khachHang.controller';
 
 const router = express.Router();
 
