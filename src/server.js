@@ -45,6 +45,8 @@ app.use(cors({
         }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow specific HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], 
 }));
 app.options('*', cors()); // Enable preflight requests for all routes
 
@@ -91,6 +93,12 @@ let onlineUsers = 0;  // Biến lưu số người dùng online
 
 // Lắng nghe kết nối WebSocket
 wss.on('connection', (ws) => {
+    const origin = request.headers.origin;
+    if (origin !== 'http://localhost:3000') {  // Replace with your front-end domain
+        ws.close();  // Close the connection if the origin is not allowed
+        return;
+    }
+
     onlineUsers++;  // Tăng số người dùng online
     console.log(`Người dùng kết nối. Tổng số người online: ${onlineUsers}`);
 
