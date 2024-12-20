@@ -2,12 +2,17 @@
 const express = require('express');
 const path = require('path');
 const xlsx = require('xlsx');
-import uploadFile, { uploadExcel, uploadExcelFile } from '../controllers/Upload/upload.controller';
+const { uploadFile, uploadFiles, uploadExcelFile } = require('../controllers/Upload/upload.controller');
+// import uploadFile, { uploadExcel, uploadExcelFile } from '../controllers/Upload/upload.controller';
 const router = express.Router();
 
-// Tạo route upload
-router.post('/upload', uploadFile.uploadFile);
-router.post('/multiple', uploadFile.uploadFiles);
+// // Tạo route upload
+// router.post('/upload', uploadFile.uploadFile);
+// router.post('/multiple', uploadFile.uploadFiles);
+// router.post('/upload-excel', uploadExcelFile);
+
+router.post('/upload', uploadFile);
+router.post('/multiple', uploadFiles);
 router.post('/upload-excel', uploadExcelFile);
 // router.post('/upload-excel', uploadExcel, (req, res) => {
 //     if (!req.file) {

@@ -1,35 +1,35 @@
 const express = require("express");
 import { verifyGoogleToken } from '../controllers/Login/login.google.controller';
-import loginKH from '../controllers/Login/login.kh.controller';
-import doiThongTinKH from '../controllers/Login/doi.thong.tin.kh.controller';
+import loginKH, { checkTrangThaiIsActive, loginAccKH, logoutKH, registerAccKH, xacThucOTP } from '../controllers/Login/login.kh.controller';
+import {doiThongTinKH} from '../controllers/Login/doi.thong.tin.kh.controller';
 import { quenMatKhauKH } from '../controllers/Login/quen.mat.khau.controller';
-import accKH from '../controllers/Voucher_KhachHang/khachHang.controller';
+import accKH, { deleteAccKH, getAccKH, getOneAccKH, khoaAccKH, updateAccKH } from '../controllers/Voucher_KhachHang/khachHang.controller';
 
 const router = express.Router();
 
 // route đăng nhập kh
-router.post("/login-kh", loginKH.loginAccKH );
+router.post("/login-kh", loginAccKH );
 // route register KH
-router.post("/register-kh", loginKH.registerAccKH );
+router.post("/register-kh", registerAccKH );
 // route logout  KH
-router.post("/logout-kh", loginKH.logoutKH );
+router.post("/logout-kh", logoutKH );
 
-router.post("/xac-thuc-otp-kh", loginKH.xacThucOTP );
+router.post("/xac-thuc-otp-kh", xacThucOTP );
 
-router.get("/check-status", loginKH.checkTrangThaiIsActive );
+router.get("/check-status", checkTrangThaiIsActive );
 
 // find all acc kh
-router.get("/get-kh", accKH.getAccKH );
+router.get("/get-kh", getAccKH );
 
-router.get("/get-one-kh", accKH.getOneAccKH );
+router.get("/get-one-kh", getOneAccKH );
 
 // update acc kh
-router.put("/update-kh", accKH.updateAccKH );
+router.put("/update-kh", updateAccKH );
 
-router.put("/khoa-kh", accKH.khoaAccKH );
+router.put("/khoa-kh", khoaAccKH );
 
 // delete acc kh
-router.delete("/delete-kh/:id", accKH.deleteAccKH );
+router.delete("/delete-kh/:id", deleteAccKH );
 
 // router.post("/auth/google", verifyGoogleToken );
 
@@ -37,6 +37,6 @@ router.delete("/delete-kh/:id", accKH.deleteAccKH );
 router.post("/quen-mat-khau", quenMatKhauKH)
 
 // đổi thông tin khách hàng
-router.put("/doi-thong-tin", doiThongTinKH.doiThongTinKH)
+router.put("/doi-thong-tin", doiThongTinKH)
 
 module.exports = router;

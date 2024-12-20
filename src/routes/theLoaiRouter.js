@@ -1,18 +1,18 @@
 const express = require("express");
-import theLoai from '../controllers/TheLoai/theLoai.controller';
+import theLoai, { createTheLoai, deleteTheLoai, findOneCategory, getTheLoai, updateTheLoai } from '../controllers/TheLoai/theLoai.controller';
 const router = express.Router();
 
 // find all the loai
-router.get("/get-the-loai", theLoai.getTheLoai );
-router.get("/get-one-the-loai", theLoai.findOneCategory );
+router.get("/get-the-loai", getTheLoai );
+router.get("/get-one-the-loai", findOneCategory );
 
 // tao moi the loai
-router.post("/create-the-loai", theLoai.createTheLoai );
+router.post("/create-the-loai", createTheLoai );
 
 // update the loai
-router.put("/update-the-loai", theLoai.updateTheLoai );
+router.put("/update-the-loai", updateTheLoai );
 
 // delete the loai
-router.delete("/delete-the-loai/:id", theLoai.deleteTheLoai );
+router.delete("/delete-the-loai/:id", deleteTheLoai );
 
 module.exports = router;
