@@ -44,9 +44,7 @@ app.use(cors({
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow specific HTTP methods
-    allowedHeaders: ['Content-Type', 'Authorization'], 
+    credentials: true,    
 }));
 app.options('*', cors()); // Enable preflight requests for all routes
 
@@ -91,46 +89,46 @@ const wss = new WebSocket.Server({ noServer: true }); // Khởi tạo WebSocket 
 
 let onlineUsers = 0;  // Biến lưu số người dùng online
 
-// Lắng nghe kết nối WebSocket
-wss.on('connection', (ws) => {
-    const origin = request.headers.origin;
-    if (origin !== 'http://localhost:3000') {  // Replace with your front-end domain
-        ws.close();  // Close the connection if the origin is not allowed
-        return;
-    }
+// // Lắng nghe kết nối WebSocket
+// wss.on('connection', (ws) => {
+//     const origin = request.headers.origin;
+//     if (origin !== 'http://localhost:3000') {  // Replace with your front-end domain
+//         ws.close();  // Close the connection if the origin is not allowed
+//         return;
+//     }
 
-    onlineUsers++;  // Tăng số người dùng online
-    console.log(`Người dùng kết nối. Tổng số người online: ${onlineUsers}`);
+//     onlineUsers++;  // Tăng số người dùng online
+//     console.log(`Người dùng kết nối. Tổng số người online: ${onlineUsers}`);
 
-    // Gửi số lượng người online đến client
-    ws.send(JSON.stringify({ onlineUsers }));
+//     // Gửi số lượng người online đến client
+//     ws.send(JSON.stringify({ onlineUsers }));
 
-    // Khi kết nối bị ngắt
-    ws.on('close', () => {
-        onlineUsers--;  // Giảm số người dùng online
-        console.log(`Người dùng ngắt kết nối. Tổng số người online: ${onlineUsers}`);
-    });
-});
-
-// Tạo kết nối WebSocket với server HTTP
-app.server.on('upgrade', (request, socket, head) => {
-    wss.handleUpgrade(request, socket, head, (ws) => {
-        wss.emit('connection', ws, request);
-    });
-});
-
-// Kết nối WebSocket với HTTP server
-app.server = app.listen(port, () => {
-    console.log("Backend Node.js is running on the port:", port, `\n http://localhost:${port}`);
-});
-
-
-// app.get('/dokhactu', (req, res) => {
-//     setTimeout(function() {
-//         throw new Error('loi')
-//     })
-// })
-
-// app.listen(port, () => {
-//     console.log("backend nodejs is running on the port:", port, `\n http://localhost:${port}`);
+//     // Khi kết nối bị ngắt
+//     ws.on('close', () => {
+//         onlineUsers--;  // Giảm số người dùng online
+//         console.log(`Người dùng ngắt kết nối. Tổng số người online: ${onlineUsers}`);
+//     });
 // });
+
+// // Tạo kết nối WebSocket với server HTTP
+// app.server.on('upgrade', (request, socket, head) => {
+//     wss.handleUpgrade(request, socket, head, (ws) => {
+//         wss.emit('connection', ws, request);
+//     });
+// });
+
+// // Kết nối WebSocket với HTTP server
+// app.server = app.listen(port, () => {
+//     console.log("Backend Node.js is running on the port:", port, `\n http://localhost:${port}`);
+// });
+
+
+app.get('/dokhactu', (req, res) => {
+    setTimeout(function() {
+        throw new Error('loi')
+    })
+})
+
+app.listen(port, () => {
+    console.log("backend nodejs is running on the port:", port, `\n http://localhost:${port}`);
+});
